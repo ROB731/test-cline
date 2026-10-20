@@ -9,10 +9,10 @@ import { AccountDeletedNotice } from "@/components/AccountDeletedNotice";
 const demoStore = "/s/chez-awa";
 
 const preview = [
-  { name: "Ensemble wax Abidjan", price: 15000, image: "/uploads/demo-1.svg" },
-  { name: "Sac en raphia tressé", price: 12500, image: "/uploads/demo-2.svg" },
-  { name: "Foulard en soie", price: 6000, image: "/uploads/demo-3.svg" },
-  { name: "Bracelet perles", price: 3500, image: "/uploads/demo-4.svg" },
+  { name: "Robe longue wax", price: 22000, image: "/uploads/photos/01-ensemble-wax.jpg" },
+  { name: "Sac en raphia tressé", price: 12500, image: "/uploads/photos/02-sac-raphia.jpg" },
+  { name: "Foulard en soie", price: 6000, image: "/uploads/photos/03-foulard-soie.jpg" },
+  { name: "Bracelet perles", price: 3500, image: "/uploads/photos/04-bracelet-perles.jpg" },
 ];
 
 export default function HomePage() {

@@ -1,7 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { randomBytes, scryptSync } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 
 const prisma = new PrismaClient();
 
@@ -10,65 +8,133 @@ function hashPassword(password) {
   return `scrypt$${salt}$${scryptSync(password, salt, 64).toString("hex")}`;
 }
 
-function svg({ from, to, letter, label }) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${from}"/>
-      <stop offset="100%" stop-color="${to}"/>
-    </linearGradient>
-  </defs>
-  <rect width="900" height="900" fill="url(#g)"/>
-  <circle cx="740" cy="170" r="210" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="140" cy="760" r="260" fill="rgba(0,0,0,0.08)"/>
-  <text x="450" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="280" font-weight="bold" fill="rgba(255,255,255,0.92)">${letter}</text>
-  <text x="450" y="600" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="34" letter-spacing="6" fill="rgba(255,255,255,0.85)">${label}</text>
-</svg>`;
-}
-
-const PALETTES = [
-  ["#f6d365", "#fda085", "A", "WAX"],
-  ["#84fab0", "#8fd3f4", "B", "RAPHIA"],
-  ["#fbc2eb", "#a6c1ee", "C", "SOIE"],
-  ["#c2e9fb", "#a1c4fd", "D", "PERLES"],
-  ["#fddb92", "#d1fdff", "E", "CUIR"],
-  ["#d4fc79", "#96e6a1", "F", "KARITE"],
-  ["#fccb90", "#d57eeb", "G", "SAC"],
-  ["#e0c3fc", "#8ec5fc", "H", "PAGNE"],
-  ["#f093fb", "#f5576c", "I", "ROBE"],
-  ["#4facfe", "#00f2fe", "J", "BIJOUX"],
-  ["#fa709a", "#fee140", "K", "FLEURS"],
-  ["#30cfd0", "#330867", "L", "NATTES"],
-];
-
+// Photos : Pexels, licence Pexels (usage commercial autorise).
+// Voir public/uploads/photos/CREDITS.md pour les sources.
 const PRODUCTS = [
-  { name: "Ensemble wax « Abidjan »", price: 15000, compareAtPrice: 19000, category: "Vêtements", stock: 6, description: "Ensemble deux pièces en wax 100 % coton.\nTailles disponibles : S, M, L, XL.\nCouleurs : jaune safran, indigo.\nLivraison Abidjan sous 48h." },
-  { name: "Sac en raphia tressé", price: 12500, compareAtPrice: null, category: "Sacs & accessoires", stock: 4, description: "Sac artisanal tressé à la main par nos partenaires de Grand-Bassam.\nDoublure coton, anse en cuir véritable." },
-  { name: "Foulard en soie « Lagune »", price: 6000, compareAtPrice: 8000, category: "Sacs & accessoires", stock: 12, description: "Foulard 90 × 90 cm, soie légère, impression dégradé.\nSe porte au cou ou en headwrap." },
-  { name: "Bracelet perles de Bassam", price: 3500, compareAtPrice: null, category: "Sacs & accessoires", stock: 20, description: "Bracelet fait main en perles de verre recyclé.\nModèle unique, ajustable." },
-  { name: "Robe longue « Yamoussoukro »", price: 22000, compareAtPrice: null, category: "Vêtements", stock: 3, description: "Robe fluide en pagne, coupe évasée, manches courtes.\nTailles S à XL." },
-  { name: "Beurre de karité pur 250 g", price: 2500, compareAtPrice: null, category: "Beauté", stock: 30, description: "Beurre de karité brut non raffiné, sans parfum ajouté.\nPour peau, cheveux et lèvres." },
-  { name: "Savon noir africain", price: 1500, compareAtPrice: 2000, category: "Beauté", stock: 25, description: "Savon noir traditionnel à base de cendre de cacao.\nNettoie en douceur, 200 g." },
-  { name: "Sandales en cuir cousu main", price: 18000, compareAtPrice: null, category: "Chaussures", stock: 5, description: "Cuir tanné localement, semelle renforcée.\nPointures 37 à 43." },
-  { name: "Sac à main cuir camel", price: 27000, compareAtPrice: 32000, category: "Sacs & accessoires", stock: 2, description: "Grand sac à main en cuir, bandoulière amovible.\nDeux compartiments intérieurs." },
-  { name: "Coupe-coupe décoré", price: 9000, compareAtPrice: null, category: "Maison", stock: 0, description: "Coupe-coupe traditionnel avec manche sculpté.\nPièce décorative ou usage quotidien." },
-  { name: "Coussin bogolan", price: 7500, compareAtPrice: null, category: "Maison", stock: 8, description: "Housse de coussin 45 × 45 cm en bogolan, fermeture zippée.\nGarnissage non inclus." },
-  { name: "Boucles d'oreilles laiton", price: 4500, compareAtPrice: 6000, category: "Sacs & accessoires", stock: 15, description: "Boucles d'oreilles martelées en laiton, légères.\nFabriquées à Bouaké." },
+  {
+    photo: "01-ensemble-wax.jpg",
+    name: "Robe longue wax « Abidjan »",
+    price: 22000,
+    compareAtPrice: null,
+    category: "Vêtements",
+    stock: 3,
+    description:
+      "Robe longue fluide en tissu wax, coupe évasée et ceinture assortie.\nTailles disponibles : S, M, L, XL.\nLivraison à Abidjan sous 48 h.",
+  },
+  {
+    photo: "02-sac-raphia.jpg",
+    name: "Sac en raphia tressé",
+    price: 12500,
+    compareAtPrice: null,
+    category: "Sacs & accessoires",
+    stock: 4,
+    description:
+      "Sac rond tressé à la main en raphia naturel, motif rose.\nAnse renforcée, format 30 cm.\nPièce unique réalisée à Grand-Bassam.",
+  },
+  {
+    photo: "03-foulard-soie.jpg",
+    name: "Foulard en soie « Lagune »",
+    price: 6000,
+    compareAtPrice: 8000,
+    category: "Sacs & accessoires",
+    stock: 12,
+    description:
+      "Foulard 90 × 90 cm en soie légère, imprimé graphique orange et bleu.\nSe porte au cou, en headwrap ou noué au sac.",
+  },
+  {
+    photo: "04-bracelet-perles.jpg",
+    name: "Bracelet perles de Bassam",
+    price: 3500,
+    compareAtPrice: null,
+    category: "Sacs & accessoires",
+    stock: 20,
+    description:
+      "Bracelet monté sur perles de verre recyclé, tons turquoise.\nFermoir réglable, pièce unique.",
+  },
+  {
+    photo: "05-robe-longue.jpg",
+    name: "Haut en wax « Bassam »",
+    price: 13500,
+    compareAtPrice: null,
+    category: "Vêtements",
+    stock: 5,
+    description:
+      "Haut cintré en pagne imprimé, manches longues et ceinture nouée.\nTailles S à L.\nConfection artisanale à Abidjan.",
+  },
+  {
+    photo: "06-beurre-karite.jpg",
+    name: "Beurre de karité pur 250 g",
+    price: 2500,
+    compareAtPrice: null,
+    category: "Beauté",
+    stock: 30,
+    description:
+      "Beurre de karité brut, non raffiné et sans parfum ajouté.\nPour la peau, les cheveux et les lèvres.\nPot de 250 g.",
+  },
+  {
+    photo: "07-savon-noir.jpg",
+    name: "Savon artisanal doux",
+    price: 1500,
+    compareAtPrice: 2000,
+    category: "Beauté",
+    stock: 25,
+    description:
+      "Savon saponifié à froid aux huiles végétales, parfum agrumes.\nConvient aux peaux sensibles.\nPain de 120 g.",
+  },
+  {
+    photo: "08-sandales-cuir.jpg",
+    name: "Sandales en cuir cousu main",
+    price: 18000,
+    compareAtPrice: null,
+    category: "Chaussures",
+    stock: 5,
+    description:
+      "Sandales en cuir tanné localement, semelle renforcée.\nCousues main par nos artisans.\nPointures 37 à 43.",
+  },
+  {
+    photo: "09-sac-cuir-camel.jpg",
+    name: "Sac à main cuir camel",
+    price: 27000,
+    compareAtPrice: 32000,
+    category: "Sacs & accessoires",
+    stock: 2,
+    description:
+      "Grand cabas en cuir grainé, anses renforcées et doublure textile.\nDeux compartiments intérieurs, fermeture zippée.",
+  },
+  {
+    photo: "10-panier-tresse.jpg",
+    name: "Panier de rangement tressé",
+    price: 9000,
+    compareAtPrice: null,
+    category: "Maison",
+    stock: 6,
+    description:
+      "Panier en fibres naturelles tressées, deux anses.\nIdéal pour le linge ou les objets du quotidien.\nHauteur 35 cm.",
+  },
+  {
+    photo: "11-coussin-bogolan.jpg",
+    name: "Coussin en bogolan",
+    price: 7500,
+    compareAtPrice: null,
+    category: "Maison",
+    stock: 8,
+    description:
+      "Housse de coussin 45 × 45 cm en tissu bogolan, fermeture zippée.\nGarnissage non inclus.\nMotif géométrique noir et écru.",
+  },
+  {
+    photo: "12-boucles-laiton.jpg",
+    name: "Boucles d'oreilles laiton",
+    price: 4500,
+    compareAtPrice: 6000,
+    category: "Sacs & accessoires",
+    stock: 15,
+    description:
+      "Créoles ovales en laiton doré et argenté, légères à porter.\nFermoir sécurisé.\nFabriquées à Bouaké.",
+  },
 ];
 
 async function main() {
-  const uploads = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploads, { recursive: true });
-
-  const images = [];
-  for (let i = 0; i < PALETTES.length; i += 1) {
-    const [from, to, letter, label] = PALETTES[i];
-    const filename = `demo-${i + 1}.svg`;
-    await writeFile(path.join(uploads, filename), svg({ from, to, letter, label }), "utf8");
-    images.push(`/uploads/${filename}`);
-  }
-
-  // On repart d'une base de démo propre.
+  // On repart d'une base de démonstration propre.
   await prisma.merchant.deleteMany({ where: { phone: "0700000000" } });
 
   const merchant = await prisma.merchant.create({
@@ -80,7 +146,7 @@ async function main() {
       whatsapp: "0700000000",
       callNumber: "0700000000",
       city: "Cocody, Abidjan",
-      bio: "Vêtements en wax, sacs en raphia et beauté naturelle. Fait main à Abidjan, livraison sous 48h.",
+      bio: "Prêt-à-porter en wax, sacs en raphia et soins naturels. Confection artisanale à Abidjan, livraison sous 48 h.",
       plan: "FREE",
       phoneVerified: true,
       lastLoginAt: new Date(),
@@ -89,10 +155,7 @@ async function main() {
   });
 
   const created = [];
-  for (let i = 0; i < PRODUCTS.length; i += 1) {
-    const product = PRODUCTS[i];
-    const main = images[i % images.length];
-    const secondary = images[(i + 3) % images.length];
+  for (const product of PRODUCTS) {
     created.push(
       await prisma.product.create({
         data: {
@@ -104,7 +167,7 @@ async function main() {
           category: product.category,
           stock: product.stock,
           active: true,
-          images: JSON.stringify([main, secondary]),
+          images: JSON.stringify([`/uploads/photos/${product.photo}`]),
         },
       }),
     );
@@ -161,7 +224,7 @@ async function main() {
     });
   }
 
-  console.log(`✅ Démo prête : ${created.length} produits, ${orders.length} commandes.`);
+  console.log(`Demo prete : ${created.length} produits, ${orders.length} commandes.`);
   console.log("   Boutique : /s/chez-awa");
   console.log("   Connexion : 0700000000 / demo1234");
 }

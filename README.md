@@ -182,6 +182,15 @@ via WhatsApp depuis l'onglet Abonnement.
 
 ---
 
+## Photos de démonstration
+
+Les douze produits de la boutique « Chez Awa » utilisent des photographies réelles issues de
+Pexels (licence autorisant l'usage commercial). Les fichiers sont dans
+`public/uploads/photos/` et les sources sont listées dans `public/uploads/photos/CREDITS.md`.
+
+Pour remplacer une photo : dépose le fichier dans `public/uploads/photos/` et mets à jour le
+chemin dans `prisma/seed.mjs`, puis relance `npm run db:reset`.
+
 ## Tests
 
 ```bash
