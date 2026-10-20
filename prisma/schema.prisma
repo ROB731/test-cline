@@ -1,0 +1,69 @@
+// Schéma de données — Vitrine WhatsApp
+// Dev : SQLite. Prod : changer le provider en "postgresql" (même modèle).
+// Note : les listes sont stockées en JSON texte pour rester compatible SQLite/Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id           String   @id @default(cuid())
+  phone        String   @unique
+  name         String
+  passwordHash String
+  storeName    String
+  slug         String   @unique
+  whatsapp     String
+  callNumber   String?
+  city         String?
+  bio          String?
+  logoUrl      String?
+  plan         String   @default("FREE") // FREE | PRO | BUSINESS
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  products Product[]
+  orders   Order[]
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  merchantId    String
+  name          String
+  description   String?
+  price         Int // en FCFA, entier
+  compareAtPrice Int?
+  images        String   @default("[]") // JSON array de chemins
+  category      String?
+  stock         Int      @default(0)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId, active])
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  reference    String   @unique
+  merchantId   String
+  customerName String
+  customerPhone String
+  deliveryNote String?
+  items        String // JSON array { productId, name, price, quantity }
+  total        Int
+  status       String   @default("NOUVELLE") // NOUVELLE | CONFIRMEE | EXPEDIEE | LIVREE | ANNULEE
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId, status])
+}

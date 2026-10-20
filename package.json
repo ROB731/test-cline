@@ -1,0 +1,36 @@
+{
+  "name": "vitrine-whatsapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vitrine + commandes pour les vendeurs WhatsApp en Côte d'Ivoire",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.mjs",
+    "db:reset": "prisma db push --force-reset && node prisma/seed.mjs",
+    "setup": "prisma generate && prisma db push && node prisma/seed.mjs",
+    "test:e2e": "node scripts/e2e.mjs",
+    "test": "npm run db:test && vitest run",
+    "db:test": "DATABASE_URL=file:./test.db prisma db push --skip-generate --force-reset"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "playwright": "1.55.0",
+    "prisma": "6.19.3",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
