@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { IconCopy } from "@/components/icons";
+import { Icon } from "@/components/icons";
 
 export function CopyButton({
   value,
   label = "Copier",
-  className = "btn btn-outline",
+  className = "btn btn-outline btn-sm",
 }: {
   value: string;
   label?: string;
@@ -31,8 +31,8 @@ export function CopyButton({
 
   return (
     <button type="button" onClick={copy} className={className}>
-      <IconCopy className="h-4 w-4" />
-      {copied ? "Copié !" : label}
+      <Icon name={copied ? "check" : "copy"} className="h-3.5 w-3.5" />
+      {copied ? "Copié" : label}
     </button>
   );
 }

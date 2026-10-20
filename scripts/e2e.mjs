@@ -65,9 +65,9 @@ const addButtons = shop.locator('button[aria-label^="Ajouter"]');
 const addCount = await addButtons.count();
 check(addCount > 0, `boutons d'ajout au panier (${addCount})`);
 await addButtons.first().click();
-await shop.waitForSelector("text=Voir ma commande", { timeout: 5000 });
-await shop.click("text=Voir ma commande");
-await shop.waitForSelector("text=Ma commande", { timeout: 5000 });
+await shop.waitForSelector("text=Voir mon panier", { timeout: 5000 });
+await shop.click("text=Voir mon panier");
+await shop.waitForSelector("text=Votre panier", { timeout: 5000 });
 await shop.click('button:has-text("Continuer")');
 
 const stamp = Date.now().toString().slice(-6);

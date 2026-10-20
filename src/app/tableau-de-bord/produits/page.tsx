@@ -6,7 +6,7 @@ import { getPlan } from "@/lib/plans";
 import { parseImages } from "@/lib/types";
 import { deleteProduct, toggleProduct } from "@/lib/actions/products";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { IconPlus } from "@/components/icons";
+import { Icon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -25,106 +25,108 @@ export default async function ProduitsPage({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Mes produits</h1>
-          <p className="mt-1 text-sm text-muted">
-            {products.length} / {plan.maxProducts === Number.POSITIVE_INFINITY ? "∞" : plan.maxProducts} produits · plan {plan.label}
+          <h1 className="display text-[30px] leading-tight">Produits</h1>
+          <p className="mt-1 text-[13px] text-muted">
+            {products.length} sur {plan.maxProducts === Number.POSITIVE_INFINITY ? "∞" : plan.maxProducts}{" "}
+            · formule {plan.label}
           </p>
         </div>
-        <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary shrink-0">
-          <IconPlus className="h-4 w-4" />
+        <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary btn-sm shrink-0">
+          <Icon name="plus" className="h-4 w-4" />
           Nouveau produit
         </Link>
       </div>
 
       {(cree || maj) && (
-        <p className="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-900">
-          {cree ? "Produit publié dans ta vitrine ✅" : "Produit mis à jour ✅"}
-        </p>
+        <div className="flex items-center gap-2.5 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-[13px] font-medium text-brand-900">
+          <Icon name="check" className="h-4 w-4 text-brand-700" strokeWidth={2.2} />
+          {cree ? "Article publié dans votre vitrine." : "Article mis à jour."}
+        </div>
       )}
 
       {products.length === 0 ? (
-        <div className="card px-6 py-14 text-center">
-          <p className="text-4xl">📦</p>
-          <h2 className="mt-3 text-lg font-bold">Ta vitrine est encore vide</h2>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted">
-            Ajoute ton premier article : une photo, un prix, un stock. Ça prend 30 secondes.
+        <div className="card px-6 py-16 text-center">
+          <Icon name="box" className="mx-auto h-7 w-7 text-line-strong" />
+          <h2 className="mt-4 text-[15px] font-medium">Votre vitrine est vide</h2>
+          <p className="mx-auto mt-1.5 max-w-[300px] text-[13px] leading-relaxed text-muted">
+            Ajoutez un premier article : une photo, un prix, un stock. Cela prend une trentaine de
+            secondes.
           </p>
-          <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary mt-5">
-            <IconPlus className="h-4 w-4" />
-            Ajouter mon premier produit
+          <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary btn-sm mt-5">
+            <Icon name="plus" className="h-4 w-4" />
+            Ajouter un article
           </Link>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {products.map((product) => {
             const [img] = parseImages(product.images);
-            const stockTone =
-              product.stock === 0
-                ? "border-rose-200 bg-rose-50 text-rose-700"
-                : product.stock <= 2
-                  ? "border-amber-200 bg-amber-50 text-amber-800"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-800";
-
             return (
-              <article key={product.id} className={`card overflow-hidden ${product.active ? "" : "opacity-70"}`}>
-                <div className="relative aspect-[4/3] bg-paper">
+              <article key={product.id} className="card overflow-hidden">
+                <div className="relative aspect-[4/3] border-b border-line bg-paper">
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={img} alt={product.name} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl">🖼️</div>
+                    <div className="flex h-full items-center justify-center">
+                      <Icon name="image" className="h-6 w-6 text-line-strong" />
+                    </div>
                   )}
-                  <div className="absolute left-2 top-2 flex flex-wrap gap-1">
-                    <span className={`badge bg-white ${stockTone}`}>
+                  <div className="absolute left-2 top-2 flex flex-wrap gap-1.5">
+                    <span
+                      className={`badge bg-white ${
+                        product.stock === 0
+                          ? "border-danger/25 text-danger"
+                          : product.stock <= 2
+                            ? "border-accent-400/50 text-accent-600"
+                            : "text-brand-700"
+                      }`}
+                    >
                       {product.stock === 0 ? "Rupture" : `Stock ${product.stock}`}
                     </span>
-                    {!product.active && (
-                      <span className="badge border-line bg-white text-muted">Masqué</span>
-                    )}
+                    {!product.active && <span className="badge bg-white text-muted">Masqué</span>}
                   </div>
                 </div>
 
-                <div className="space-y-3 p-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                      {product.category || "Sans catégorie"}
-                    </p>
-                    <h2 className="mt-0.5 line-clamp-1 font-bold">{product.name}</h2>
-                    <p className="mt-1 text-sm">
-                      <span className="font-bold text-brand-800">{formatFCFA(product.price)}</span>
-                      {product.compareAtPrice && (
-                        <span className="ml-2 text-xs text-muted line-through">
-                          {formatFCFA(product.compareAtPrice)}
-                        </span>
-                      )}
-                    </p>
-                  </div>
+                <div className="p-4">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
+                    {product.category || "Sans catégorie"}
+                  </p>
+                  <h2 className="mt-1 truncate text-[14px] font-medium">{product.name}</h2>
+                  <p className="mt-1 text-[13px]">
+                    <span className="font-medium">{formatFCFA(product.price)}</span>
+                    {product.compareAtPrice && (
+                      <span className="ml-2 text-[11px] text-muted line-through">
+                        {formatFCFA(product.compareAtPrice)}
+                      </span>
+                    )}
+                  </p>
 
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="mt-3.5 flex items-center gap-1.5 border-t border-line pt-3">
                     <Link
                       href={`/tableau-de-bord/produits/${product.id}`}
-                      className="btn btn-outline px-3 py-1.5 text-xs"
+                      className="btn btn-ghost btn-sm px-2"
                     >
+                      <Icon name="edit" className="h-3.5 w-3.5" />
                       Modifier
                     </Link>
-
                     <form action={toggleProduct}>
                       <input type="hidden" name="id" value={product.id} />
-                      <button type="submit" className="btn btn-outline px-3 py-1.5 text-xs">
+                      <button type="submit" className="btn btn-ghost btn-sm px-2">
+                        <Icon name={product.active ? "eye" : "eye"} className="h-3.5 w-3.5" />
                         {product.active ? "Masquer" : "Afficher"}
                       </button>
                     </form>
-
                     <form action={deleteProduct} className="ml-auto">
                       <input type="hidden" name="id" value={product.id} />
                       <ConfirmButton
                         message={`Supprimer « ${product.name} » ? Cette action est définitive.`}
-                        className="btn px-3 py-1.5 text-xs text-rose-700 hover:bg-rose-50"
+                        className="btn btn-ghost btn-sm px-2 text-muted hover:text-danger"
                       >
-                        Supprimer
+                        <Icon name="trash" className="h-3.5 w-3.5" />
                       </ConfirmButton>
                     </form>
                   </div>

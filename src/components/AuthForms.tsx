@@ -3,14 +3,16 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { signIn, signUp, type AuthState } from "@/lib/actions/auth";
+import { Icon } from "@/components/icons";
 
 const initial: AuthState = {};
 
-function ErrorBox({ message }: { message?: string }) {
+function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-800">
-      {message}
+    <p className="flex items-start gap-2 rounded-lg border border-danger/25 bg-danger/[0.06] px-3 py-2 text-sm text-danger">
+      <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
+      <span>{message}</span>
     </p>
   );
 }
@@ -20,28 +22,24 @@ export function SignUpForm() {
 
   return (
     <form action={action} className="space-y-4">
-      <ErrorBox message={state.error} />
+      <FieldError message={state.error} />
+
       <div>
-        <label className="label" htmlFor="storeName">Nom de ta boutique</label>
-        <input
-          className="input"
-          id="storeName"
-          name="storeName"
-          placeholder="Chez Awa"
-          autoComplete="organization"
-          required
-        />
-        <p className="mt-1 text-xs text-muted">Ce nom apparaîtra en haut de ta vitrine.</p>
+        <label className="label" htmlFor="storeName">
+          Nom de la boutique
+        </label>
+        <input className="input" id="storeName" name="storeName" placeholder="Chez Awa" required />
+        <p className="mt-1.5 text-xs text-muted">Il apparaîtra en haut de votre vitrine.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="label" htmlFor="name">Ton nom</label>
+          <label className="label" htmlFor="name">Votre nom</label>
           <input className="input" id="name" name="name" placeholder="Awa Koné" autoComplete="name" required />
         </div>
         <div>
-          <label className="label" htmlFor="city">Ville / quartier</label>
-          <input className="input" id="city" name="city" placeholder="Cocody, Abidjan" autoComplete="address-level2" />
+          <label className="label" htmlFor="city">Ville</label>
+          <input className="input" id="city" name="city" placeholder="Abidjan" autoComplete="address-level2" />
         </div>
       </div>
 
@@ -60,13 +58,7 @@ export function SignUpForm() {
         </div>
         <div>
           <label className="label" htmlFor="whatsapp">Numéro WhatsApp</label>
-          <input
-            className="input"
-            id="whatsapp"
-            name="whatsapp"
-            inputMode="tel"
-            placeholder="Identique au téléphone"
-          />
+          <input className="input" id="whatsapp" name="whatsapp" inputMode="tel" placeholder="Si différent" />
         </div>
       </div>
 
@@ -85,12 +77,12 @@ export function SignUpForm() {
       </div>
 
       <button type="submit" className="btn btn-primary w-full" disabled={pending}>
-        {pending ? "Création en cours…" : "Créer ma boutique gratuitement"}
+        {pending ? "Création du compte…" : "Créer ma boutique"}
       </button>
 
       <p className="text-center text-sm text-muted">
-        Déjà inscrit ?{" "}
-        <Link href="/connexion" className="font-semibold text-brand-700 hover:underline">
+        Vous avez déjà un compte ?{" "}
+        <Link href="/connexion" className="font-medium text-brand-700 underline underline-offset-2">
           Se connecter
         </Link>
       </p>
@@ -103,7 +95,7 @@ export function LoginForm() {
 
   return (
     <form action={action} className="space-y-4">
-      <ErrorBox message={state.error} />
+      <FieldError message={state.error} />
       <div>
         <label className="label" htmlFor="phone">Numéro de téléphone</label>
         <input
@@ -118,21 +110,14 @@ export function LoginForm() {
       </div>
       <div>
         <label className="label" htmlFor="password">Mot de passe</label>
-        <input
-          className="input"
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-        />
+        <input className="input" id="password" name="password" type="password" autoComplete="current-password" required />
       </div>
       <button type="submit" className="btn btn-primary w-full" disabled={pending}>
         {pending ? "Connexion…" : "Se connecter"}
       </button>
       <p className="text-center text-sm text-muted">
         Pas encore de boutique ?{" "}
-        <Link href="/inscription" className="font-semibold text-brand-700 hover:underline">
+        <Link href="/inscription" className="font-medium text-brand-700 underline underline-offset-2">
           Créer un compte
         </Link>
       </p>

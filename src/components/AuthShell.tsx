@@ -1,62 +1,72 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { Icon } from "@/components/icons";
+
+const highlights = [
+  { icon: "store" as const, text: "Une boutique à votre nom, prête en cinq minutes" },
+  { icon: "bag" as const, text: "Un panier qui envoie une commande structurée sur WhatsApp" },
+  { icon: "box" as const, text: "Un stock qui se met à jour à chaque vente" },
+  { icon: "card" as const, text: "Gratuit pour commencer, 5 000 FCFA par mois pour le plan Pro" },
+];
 
 export function AuthShell({
   title,
   subtitle,
   children,
-  footer,
 }: {
   title: string;
   subtitle: string;
   children: React.ReactNode;
-  footer?: React.ReactNode;
 }) {
   return (
-    <main className="min-h-dvh lg:grid lg:grid-cols-[1fr_1.05fr]">
-      <div className="flex min-h-dvh flex-col px-5 py-6 sm:px-10 lg:py-10">
+    <main className="min-h-dvh lg:grid lg:grid-cols-[1fr_1fr]">
+      <div className="flex min-h-dvh flex-col bg-white px-5 py-6 sm:px-10 lg:py-9">
         <Logo />
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
-          <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
-          <p className="mt-2 text-muted">{subtitle}</p>
-          <div className="mt-7">{children}</div>
-          {footer}
+        <div className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center py-12">
+          <h1 className="display text-[34px] leading-[1.1]">{title}</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{subtitle}</p>
+          <div className="mt-8">{children}</div>
         </div>
-        <p className="text-center text-xs text-muted">
-          <Link href="/" className="hover:text-ink">← Retour à l&apos;accueil</Link>
+        <p className="text-xs text-muted">
+          <Link href="/" className="inline-flex items-center gap-1.5 hover:text-ink">
+            <Icon name="arrowLeft" className="h-3.5 w-3.5" />
+            Retour à l&apos;accueil
+          </Link>
         </p>
       </div>
 
-      <aside className="relative hidden overflow-hidden bg-brand-900 p-12 text-white lg:flex lg:flex-col lg:justify-center">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-brand-700/60 blur-3xl"
-        />
-        <div className="relative max-w-md">
-          <span className="badge border-white/20 bg-white/10 text-white">🇨🇮 Côte d&apos;Ivoire</span>
-          <h2 className="mt-6 text-4xl font-extrabold leading-tight">
-            Un lien. Tous tes produits. Tes commandes au propre.
+      <aside className="relative hidden overflow-hidden border-l border-line bg-brand-950 px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-brand-300">
+            Côte d&apos;Ivoire
+          </p>
+          <h2 className="display mt-5 max-w-[420px] text-[38px] leading-[1.12]">
+            Votre catalogue mérite mieux qu&apos;un statut WhatsApp.
           </h2>
-          <ul className="mt-8 space-y-4 text-sm text-white/80">
-            {[
-              "Une vitrine à ton nom, prête en 5 minutes",
-              "Un panier qui envoie une commande claire sur WhatsApp",
-              "Le stock qui se met à jour tout seul",
-              "Gratuit pour commencer, 5 000 FCFA/mois pour passer Pro",
-            ].map((item) => (
-              <li key={item} className="flex gap-3">
-                <span className="text-accent-300">✓</span>
-                <span>{item}</span>
+          <ul className="mt-10 max-w-[400px] space-y-4 border-t border-white/10 pt-8">
+            {highlights.map((item) => (
+              <li key={item.text} className="flex gap-3 text-sm leading-relaxed text-white/70">
+                <Icon name={item.icon} className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" />
+                {item.text}
               </li>
             ))}
           </ul>
-          <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm">
-            <p className="font-semibold text-white">Compte de démonstration</p>
-            <p className="mt-1 text-white/70">
-              Téléphone <span className="font-mono">0700000000</span> · mot de passe{" "}
-              <span className="font-mono">demo1234</span>
-            </p>
-          </div>
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-brand-300">
+            Compte de démonstration
+          </p>
+          <dl className="mt-3 space-y-1.5 text-sm text-white/60">
+            <div className="flex justify-between gap-4">
+              <dt>Téléphone</dt>
+              <dd className="font-mono text-white/90">0700000000</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt>Mot de passe</dt>
+              <dd className="font-mono text-white/90">demo1234</dd>
+            </div>
+          </dl>
         </div>
       </aside>
     </main>

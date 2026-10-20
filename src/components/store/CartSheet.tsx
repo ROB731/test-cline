@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { cartTotal, type CartItem } from "@/lib/cart";
 import { formatFCFA, whatsappLink } from "@/lib/format";
 import { createPublicOrder, type PublicOrderState } from "@/lib/actions/orders";
-import { IconWhatsApp } from "@/components/icons";
+import { Icon, IconWhatsApp } from "@/components/icons";
 
 const initial: PublicOrderState = {};
 
@@ -51,7 +51,7 @@ export function CartSheet({
     const note = customer.note;
 
     const message = [
-      `Bonjour ${storeName} 👋`,
+      `Bonjour ${storeName},`,
       `Je viens de passer la commande ${state.order.reference} sur votre vitrine.`,
       "",
       ...items.map((item) => `• ${item.quantity} × ${item.name} — ${formatFCFA(item.price * item.quantity)}`),
@@ -82,13 +82,18 @@ export function CartSheet({
         className="absolute inset-0 bg-black/45 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+      <div className="relative z-10 flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-xl">
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <h2 className="font-bold">
-            {step === "panier" ? "Ma commande" : "Tes coordonnées"}
+            {step === "panier" ? "Votre panier" : "Vos coordonnées"}
           </h2>
-          <button type="button" onClick={onClose} className="rounded-full bg-paper px-3 py-1 text-sm">
-            ✕
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted hover:bg-paper hover:text-ink"
+            aria-label="Fermer"
+          >
+            <Icon name="close" className="h-4 w-4" />
           </button>
         </div>
 
@@ -108,24 +113,24 @@ export function CartSheet({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{item.name}</p>
                     <p className="text-xs text-muted">{formatFCFA(item.price)}</p>
-                    <div className="mt-1.5 inline-flex items-center gap-2 rounded-full border border-line px-1">
+                    <div className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-line">
                       <button
                         type="button"
                         onClick={() => onQuantity(item.productId, item.quantity - 1)}
-                        className="px-2 py-0.5 text-lg leading-none text-muted"
+                        className="px-2 py-1 text-muted hover:text-ink"
                         aria-label="Diminuer"
                       >
-                        −
+                        <Icon name="minus" className="h-3.5 w-3.5" />
                       </button>
                       <span className="min-w-4 text-center text-xs font-bold">{item.quantity}</span>
                       <button
                         type="button"
                         onClick={() => onQuantity(item.productId, item.quantity + 1)}
                         disabled={item.quantity >= item.stock}
-                        className="px-2 py-0.5 text-lg leading-none text-muted disabled:opacity-30"
+                        className="px-2 py-1 text-muted hover:text-ink disabled:opacity-30"
                         aria-label="Augmenter"
                       >
-                        +
+                        <Icon name="plus" className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -197,7 +202,7 @@ export function CartSheet({
         <div className="border-t border-line px-5 py-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted">Total</span>
-            <span className="text-lg font-extrabold">{formatFCFA(total)}</span>
+            <span className="text-[17px] font-medium">{formatFCFA(total)}</span>
           </div>
           {step === "panier" && items.length > 0 && (
             <button type="button" onClick={() => setStep("infos")} className="btn btn-primary mt-3 w-full">

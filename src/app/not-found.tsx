@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { Icon } from "@/components/icons";
 
 export default function NotFound() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
       <Logo />
-      <p className="mt-8 text-6xl">🧺</p>
-      <h1 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
-        Cette page n&apos;existe pas
-      </h1>
-      <p className="mt-2 max-w-md text-sm text-muted">
-        La boutique ou l&apos;article que tu cherches a peut-être été retiré. Vérifie le lien, ou
-        demande-le directement au vendeur sur WhatsApp.
+      <p className="mt-10 font-mono text-[11px] tracking-[0.18em] text-muted">ERREUR 404</p>
+      <h1 className="display mt-3 text-[32px] leading-tight">Cette page n&apos;existe pas</h1>
+      <p className="mt-3 max-w-md text-[13.5px] leading-relaxed text-muted">
+        La boutique ou l&apos;article recherché a peut-être été retiré. Vérifiez le lien, ou
+        demandez-le directement au vendeur sur WhatsApp.
       </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
+      <div className="mt-7 flex flex-wrap justify-center gap-3">
         <Link href="/" className="btn btn-primary">
-          Retour à l&apos;accueil
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          Accueil
         </Link>
         <Link href="/s/chez-awa" className="btn btn-outline">
           Voir la boutique démo

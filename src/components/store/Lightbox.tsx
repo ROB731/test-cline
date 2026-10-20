@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Icon } from "@/components/icons";
 
 const MAX_SCALE = 4;
 
@@ -115,9 +116,10 @@ export function Lightbox({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-white"
+          className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-2.5 py-1.5 text-[12px] font-medium text-white"
         >
-          Fermer ✕
+          Fermer
+          <Icon name="close" className="h-3.5 w-3.5" />
         </button>
       </div>
 
@@ -151,18 +153,18 @@ export function Lightbox({
             <button
               type="button"
               onClick={() => go(-1)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/15 px-3 py-2 text-white"
+              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white"
               aria-label="Photo précédente"
             >
-              ‹
+              <Icon name="chevronLeft" className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => go(1)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/15 px-3 py-2 text-white"
+              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white"
               aria-label="Photo suivante"
             >
-              ›
+              <Icon name="chevronRight" className="h-4 w-4" />
             </button>
           </>
         )}

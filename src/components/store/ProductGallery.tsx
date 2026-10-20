@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Lightbox } from "@/components/store/Lightbox";
+import { Icon } from "@/components/icons";
 
 export function ProductGallery({ images, name }: { images: string[]; name: string }) {
   const [index, setIndex] = useState(0);
@@ -9,8 +10,8 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-brand-50 text-5xl">
-        🖼️
+      <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-line bg-paper">
+        <Icon name="image" className="h-8 w-8 text-line-strong" />
       </div>
     );
   }
@@ -20,13 +21,14 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="relative block aspect-square w-full overflow-hidden rounded-2xl border border-line bg-white"
+        className="relative block aspect-square w-full overflow-hidden rounded-lg border border-line bg-white"
         aria-label="Agrandir la photo"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={images[index]} alt={name} className="h-full w-full object-cover" />
-        <span className="absolute bottom-2 right-2 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white">
-          🔍 Toucher pour zoomer
+        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded bg-black/55 px-2 py-1 text-[10px] font-medium text-white">
+          <Icon name="zoom" className="h-3 w-3" />
+          Agrandir
         </span>
       </button>
 

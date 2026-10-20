@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { requireMerchant } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { formatDate, formatFCFA } from "@/lib/format";
+import { formatDate, formatFCFA, statusMeta } from "@/lib/format";
 import { getPlan } from "@/lib/plans";
 import { parseImages, parseItems } from "@/lib/types";
 import { StoreLink } from "@/components/StoreLink";
-import { IconPlus } from "@/components/icons";
+import { Icon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -41,91 +41,100 @@ export default async function DashboardHome({
   const firstName = merchant.name.split(" ")[0];
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Bonjour {firstName} 👋
-          </h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className="display text-[30px] leading-tight">Bonjour {firstName}</h1>
+          <p className="mt-1 text-[13px] text-muted">
             {productCount === 0
-              ? "Ta vitrine est prête. Ajoute ton premier produit pour commencer."
-              : `Tu as ${productCount} produit${productCount > 1 ? "s" : ""} en ligne.`}
+              ? "Votre vitrine est prête. Ajoutez un premier article pour commencer."
+              : `${productCount} article${productCount > 1 ? "s" : ""} en ligne sur votre vitrine.`}
           </p>
         </div>
-        <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary shrink-0">
-          <IconPlus className="h-4 w-4" />
+        <Link href="/tableau-de-bord/produits/nouveau" className="btn btn-primary btn-sm shrink-0">
+          <Icon name="plus" className="h-4 w-4" />
           Ajouter un produit
         </Link>
       </div>
 
       {bienvenue && (
-        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
-          <p className="font-bold text-brand-900">Bienvenue sur Vitrine 🎉</p>
-          <p className="mt-1 text-sm text-brand-900/80">
-            Ton lien est actif. Ajoute tes produits, puis partage-le dans ta bio Instagram et tes
-            statuts WhatsApp. Les commandes arriveront automatiquement ici.
-          </p>
+        <div className="flex gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3.5">
+          <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" strokeWidth={2.2} />
+          <div>
+            <p className="text-[13px] font-medium text-brand-900">Votre vitrine est active</p>
+            <p className="mt-0.5 text-[13px] leading-relaxed text-brand-900/70">
+              Ajoutez vos produits, puis partagez le lien dans votre biographie Instagram et vos
+              statuts. Les commandes arriveront ici, déjà rédigées.
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4">
         {[
           { label: "Chiffre d'affaires", value: formatFCFA(revenue._sum.total ?? 0), hint: `${delivered} commande(s) livrée(s)` },
           { label: "Nouvelles commandes", value: `${newOrders}`, hint: "à traiter" },
-          { label: "Produits", value: `${productCount}/${plan.maxProducts === Number.POSITIVE_INFINITY ? "∞" : plan.maxProducts}`, hint: `plan ${plan.label}` },
+          {
+            label: "Produits",
+            value: `${productCount}/${plan.maxProducts === Number.POSITIVE_INFINITY ? "∞" : plan.maxProducts}`,
+            hint: `formule ${plan.label}`,
+          },
           { label: "Stock faible", value: `${lowStock.length}`, hint: "articles à réapprovisionner" },
         ].map((stat) => (
-          <div key={stat.label} className="card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{stat.label}</p>
-            <p className="mt-2 text-xl font-extrabold sm:text-2xl">{stat.value}</p>
-            <p className="mt-0.5 text-xs text-muted">{stat.hint}</p>
+          <div key={stat.label} className="bg-white p-5">
+            <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
+              {stat.label}
+            </p>
+            <p className="display mt-2 text-[24px] leading-none">{stat.value}</p>
+            <p className="mt-1.5 text-[11px] text-muted">{stat.hint}</p>
           </div>
         ))}
       </div>
 
       <section className="card p-5">
-        <h2 className="font-bold">Ton lien de boutique</h2>
-        <p className="mt-1 text-sm text-muted">
-          Mets-le dans ta bio Instagram, tes statuts WhatsApp et ta page Facebook.
+        <h2 className="text-[14px] font-medium">Lien de la boutique</h2>
+        <p className="mt-1 text-[13px] text-muted">
+          À placer dans votre biographie Instagram, vos statuts WhatsApp et votre page Facebook.
         </p>
         <div className="mt-3">
           <StoreLink slug={merchant.slug} />
         </div>
       </section>
 
-      <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-5 lg:grid-cols-[1.45fr_1fr]">
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
-            <h2 className="font-bold">Dernières commandes</h2>
-            <Link href="/tableau-de-bord/commandes" className="text-sm font-semibold text-brand-700 hover:underline">
+            <h2 className="text-[14px] font-medium">Dernières commandes</h2>
+            <Link href="/tableau-de-bord/commandes" className="text-[12px] font-medium text-brand-700 hover:underline">
               Tout voir
             </Link>
           </div>
+
           {orders.length === 0 ? (
-            <div className="px-5 py-10 text-center">
-              <p className="text-3xl">🛒</p>
-              <p className="mt-2 font-semibold">Aucune commande pour l&apos;instant</p>
-              <p className="mt-1 text-sm text-muted">
-                Partage ton lien : la première vente arrive souvent le jour même.
+            <div className="px-5 py-12 text-center">
+              <Icon name="bag" className="mx-auto h-6 w-6 text-line-strong" />
+              <p className="mt-3 text-[13px] font-medium">Aucune commande pour le moment</p>
+              <p className="mx-auto mt-1 max-w-[260px] text-[12px] leading-relaxed text-muted">
+                Partagez votre lien : la première vente arrive souvent le jour même.
               </p>
             </div>
           ) : (
             <ul className="divide-y divide-line">
               {orders.map((order) => {
                 const items = parseItems(order.items);
+                const meta = statusMeta(order.status);
                 return (
-                  <li key={order.id} className="flex items-center justify-between gap-3 px-5 py-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{order.customerName}</p>
-                      <p className="truncate text-xs text-muted">
+                  <li key={order.id} className="flex items-center gap-3 px-5 py-3.5">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-medium">{order.customerName}</p>
+                      <p className="mt-0.5 truncate font-mono text-[11px] text-muted">
                         {order.reference} · {items.reduce((n, i) => n + i.quantity, 0)} article(s) ·{" "}
                         {formatDate(order.createdAt)}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-sm font-bold">{formatFCFA(order.total)}</p>
-                      <p className="text-[11px] font-semibold text-brand-700">{order.status}</p>
+                      <p className="text-[13px] font-medium">{formatFCFA(order.total)}</p>
+                      <p className="mt-0.5 text-[11px] text-muted">{meta.label}</p>
                     </div>
                   </li>
                 );
@@ -136,14 +145,14 @@ export default async function DashboardHome({
 
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
-            <h2 className="font-bold">Stock à surveiller</h2>
-            <Link href="/tableau-de-bord/produits" className="text-sm font-semibold text-brand-700 hover:underline">
+            <h2 className="text-[14px] font-medium">Stock à surveiller</h2>
+            <Link href="/tableau-de-bord/produits" className="text-[12px] font-medium text-brand-700 hover:underline">
               Gérer
             </Link>
           </div>
           {lowStock.length === 0 ? (
-            <p className="px-5 py-8 text-sm text-muted">
-              Tout va bien : aucun article presque épuisé.
+            <p className="px-5 py-10 text-[13px] text-muted">
+              Aucun article presque épuisé pour le moment.
             </p>
           ) : (
             <ul className="divide-y divide-line">
@@ -153,22 +162,18 @@ export default async function DashboardHome({
                   <li key={product.id} className="flex items-center gap-3 px-4 py-3">
                     {img ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={img} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                      <img src={img} alt="" className="h-9 w-9 rounded border border-line object-cover" />
                     ) : (
-                      <span className="h-10 w-10 rounded-lg bg-paper" />
+                      <span className="h-9 w-9 rounded bg-paper" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{product.name}</p>
-                      <p className="text-xs text-muted">{formatFCFA(product.price)}</p>
+                      <p className="truncate text-[13px] font-medium">{product.name}</p>
+                      <p className="text-[11px] text-muted">{formatFCFA(product.price)}</p>
                     </div>
                     <span
-                      className={`badge ${
-                        product.stock === 0
-                          ? "border-rose-200 bg-rose-50 text-rose-700"
-                          : "border-amber-200 bg-amber-50 text-amber-800"
-                      }`}
+                      className={`badge ${product.stock === 0 ? "border-danger/25 bg-danger/[0.06] text-danger" : "border-accent-400/40 bg-accent-100 text-accent-600"}`}
                     >
-                      {product.stock === 0 ? "Rupture" : `${product.stock} rest.`}
+                      {product.stock === 0 ? "Rupture" : `${product.stock} restant`}
                     </span>
                   </li>
                 );
@@ -179,19 +184,20 @@ export default async function DashboardHome({
       </div>
 
       {plan.id === "FREE" && (
-        <section className="rounded-2xl border border-accent-300 bg-accent-100/60 p-5">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <section className="flex flex-col justify-between gap-4 rounded-xl border border-line bg-white p-5 sm:flex-row sm:items-center">
+          <div className="flex gap-3">
+            <Icon name="sliders" className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
             <div>
-              <p className="font-bold text-brand-900">Tu es sur le plan gratuit</p>
-              <p className="mt-1 text-sm text-brand-900/75">
-                {plan.maxProducts} produits maximum et badge Vitrine sur ta page. Passe en Pro pour
-                retirer le badge et aller jusqu&apos;à 200 produits.
+              <p className="text-[13px] font-medium">Formule gratuite</p>
+              <p className="mt-0.5 text-[13px] leading-relaxed text-muted">
+                {plan.maxProducts} produits maximum et mention Vitrine en bas de page. Le plan Pro
+                retire la mention et autorise 200 produits.
               </p>
             </div>
-            <Link href="/tableau-de-bord/abonnement" className="btn btn-primary shrink-0">
-              Voir les plans
-            </Link>
           </div>
+          <Link href="/tableau-de-bord/abonnement" className="btn btn-outline btn-sm shrink-0">
+            Comparer les formules
+          </Link>
         </section>
       )}
     </div>

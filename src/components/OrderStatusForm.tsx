@@ -13,7 +13,7 @@ function StatusSelect({ status }: { status: string }) {
       defaultValue={status}
       disabled={pending}
       onChange={(event) => event.currentTarget.form?.requestSubmit()}
-      className="rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-semibold text-ink outline-none focus:border-brand-500"
+      className="h-8 rounded-md border border-line-strong bg-white px-2 text-[12px] font-medium text-ink outline-none focus:border-brand-500 disabled:opacity-60"
       aria-label="Changer le statut de la commande"
     >
       {ORDER_STATUSES.map((option) => (

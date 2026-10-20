@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { addToCart } from "@/lib/cart";
 import { formatFCFA } from "@/lib/format";
+import { Icon } from "@/components/icons";
 
 export function ProductActions({
   slug,
@@ -39,24 +40,24 @@ export function ProductActions({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <div className="inline-flex items-center rounded-full border border-line bg-white">
+        <div className="inline-flex items-center rounded-md border border-line-strong bg-white">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-3.5 py-2 text-lg leading-none text-muted"
+            className="px-3 py-2 text-muted hover:text-ink"
             aria-label="Diminuer la quantité"
           >
-            −
+            <Icon name="minus" className="h-4 w-4" />
           </button>
           <span className="min-w-6 text-center text-sm font-bold">{quantity}</span>
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(product.stock, value + 1))}
             disabled={quantity >= product.stock}
-            className="px-3.5 py-2 text-lg leading-none text-muted disabled:opacity-30"
+            className="px-3 py-2 text-muted hover:text-ink disabled:opacity-30"
             aria-label="Augmenter la quantité"
           >
-            +
+            <Icon name="plus" className="h-4 w-4" />
           </button>
         </div>
         <p className="text-sm text-muted">
@@ -79,7 +80,14 @@ export function ProductActions({
           disabled={soldOut}
           className="btn btn-outline w-full"
         >
-          {added ? "Ajouté ✓" : "Ajouter au panier"}
+          {added ? (
+            <>
+              <Icon name="check" className="h-4 w-4" strokeWidth={2.2} />
+              Ajouté au panier
+            </>
+          ) : (
+            "Ajouter au panier"
+          )}
         </button>
       </div>
 

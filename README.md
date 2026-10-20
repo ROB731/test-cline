@@ -45,6 +45,8 @@ Le vendeur n'a **aucune boutique à créer** : il importe ses produits, partage 
 | Framework | Next.js 16 (App Router, Server Actions) |
 | Langage | TypeScript strict |
 | Styles | Tailwind CSS 4 |
+| Typographie | Inter (interface) + Instrument Serif (titres), auto-hébergées |
+| Iconographie | jeu d'icônes SVG maison (`src/components/icons.tsx`), aucun emoji |
 | Données | Prisma 6 + SQLite (dev) → PostgreSQL (prod) |
 | Auth | Session signée HMAC-SHA256 + `scrypt` (aucune dépendance externe) |
 | Tests | Vitest (base SQLite dédiée) |

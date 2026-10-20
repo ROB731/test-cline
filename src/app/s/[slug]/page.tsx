@@ -6,7 +6,7 @@ import { whatsappLink, telLink, formatFCFA } from "@/lib/format";
 import { getPlan } from "@/lib/plans";
 import { parseImages } from "@/lib/types";
 import { StoreCatalog } from "@/components/store/StoreCatalog";
-import { IconPhone, IconWhatsApp } from "@/components/icons";
+import { Icon, IconWhatsApp } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +19,10 @@ export async function generateMetadata({
   const merchant = await prisma.merchant.findUnique({ where: { slug } });
   if (!merchant) return { title: "Boutique introuvable — Vitrine" };
   return {
-    title: `${merchant.storeName} — Vitrine`,
+    title: `${merchant.storeName} — Boutique en ligne`,
     description:
       merchant.bio ??
-      `Découvre les articles de ${merchant.storeName} et commande directement sur WhatsApp.`,
+      `Découvrez les articles de ${merchant.storeName} et commandez directement sur WhatsApp.`,
   };
 }
 
@@ -51,84 +51,92 @@ export default async function BoutiquePublique({
   );
 
   return (
-    <div className="min-h-dvh pb-28">
-      <header className="relative overflow-hidden bg-brand-900 pb-16 text-white">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 10%, rgba(255,255,255,0.25), transparent 45%), radial-gradient(circle at 85% 30%, rgba(251,191,36,0.35), transparent 40%)",
-          }}
-        />
-        <div className="container-page relative flex items-center justify-between py-4">
-          <span className="text-sm font-extrabold tracking-tight">
-            Vitrine<span className="text-accent-400">.</span>
-          </span>
+    <div className="min-h-dvh bg-white pb-28">
+      <header className="border-b border-line">
+        <div className="container-page flex h-14 items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-2.5">
+            {merchant.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={merchant.logoUrl}
+                alt={merchant.storeName}
+                className="h-8 w-8 rounded border border-line object-cover"
+              />
+            ) : (
+              <span className="display flex h-8 w-8 items-center justify-center rounded bg-brand-900 text-[13px] text-white">
+                {merchant.storeName.slice(0, 1).toUpperCase()}
+              </span>
+            )}
+            <span className="truncate text-[13px] font-medium">{merchant.storeName}</span>
+          </div>
           <a
             href={whatsappLink(
               merchant.whatsapp,
-              `Bonjour ${merchant.storeName}, je viens de votre vitrine.`,
+              `Bonjour ${merchant.storeName}, je vous contacte depuis votre vitrine.`,
             )}
             target="_blank"
             rel="noreferrer"
-            className="badge border-white/25 bg-white/10 text-white"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:underline"
           >
-            <IconWhatsApp className="h-3.5 w-3.5" /> Écrire
+            <IconWhatsApp className="h-3.5 w-3.5" />
+            Écrire
           </a>
-        </div>
-
-        <div className="container-page relative mt-6 flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-left sm:gap-6">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-white/10 text-2xl font-black">
-            {merchant.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={merchant.logoUrl} alt={merchant.storeName} className="h-full w-full object-cover" />
-            ) : (
-              merchant.storeName.slice(0, 1).toUpperCase()
-            )}
-          </div>
-          <div className="mt-3 sm:mt-0">
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              {merchant.storeName}
-            </h1>
-            <p className="mt-1 text-sm text-white/70">
-              {merchant.city || "Côte d'Ivoire"} · {products.length} article
-              {products.length > 1 ? "s" : ""}
-              {cheapest !== null ? ` · dès ${formatFCFA(cheapest)}` : ""}
-            </p>
-            {merchant.bio && (
-              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-white/80 sm:mx-0">
-                {merchant.bio}
-              </p>
-            )}
-          </div>
         </div>
       </header>
 
-      <div className="container-page -mt-10">
-        <div className="mb-4 grid grid-cols-2 gap-2 sm:flex">
-          <a
-            href={whatsappLink(
-              merchant.whatsapp,
-              `Bonjour ${merchant.storeName}, je viens de votre vitrine.`,
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-wa w-full shadow-sm sm:w-auto"
-          >
-            <IconWhatsApp className="h-4 w-4" /> WhatsApp
-          </a>
-          {merchant.callNumber ? (
-            <a href={telLink(merchant.callNumber)} className="btn btn-accent w-full shadow-sm sm:w-auto">
-              <IconPhone className="h-4 w-4" /> Appeler
-            </a>
-          ) : (
-            <a href={telLink(merchant.whatsapp)} className="btn btn-accent w-full shadow-sm sm:w-auto">
-              <IconPhone className="h-4 w-4" /> Appeler
-            </a>
+      <section className="border-b border-line bg-paper/60">
+        <div className="container-page py-9 sm:py-12">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+            {merchant.city || "Côte d'Ivoire"}
+          </p>
+          <h1 className="display mt-2 text-[34px] leading-[1.08] sm:text-[42px]">
+            {merchant.storeName}
+          </h1>
+          {merchant.bio && (
+            <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-muted">{merchant.bio}</p>
           )}
-        </div>
+          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted">
+            <span>
+              {products.length} article{products.length > 1 ? "s" : ""}
+            </span>
+            {cheapest !== null && (
+              <>
+                <span className="h-3 w-px bg-line-strong" />
+                <span>à partir de {formatFCFA(cheapest)}</span>
+              </>
+            )}
+            <span className="h-3 w-px bg-line-strong" />
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              Réponse sur WhatsApp
+            </span>
+          </p>
 
+          <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+            <a
+              href={whatsappLink(
+                merchant.whatsapp,
+                `Bonjour ${merchant.storeName}, je vous contacte depuis votre vitrine.`,
+              )}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-wa"
+            >
+              <IconWhatsApp className="h-4 w-4" />
+              Commander sur WhatsApp
+            </a>
+            <a
+              href={telLink(merchant.callNumber || merchant.whatsapp)}
+              className="btn btn-outline"
+            >
+              <Icon name="phone" className="h-4 w-4" />
+              Appeler la boutique
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-page py-8">
         <StoreCatalog
           slug={merchant.slug}
           storeName={merchant.storeName}
@@ -145,21 +153,23 @@ export default async function BoutiquePublique({
           }))}
         />
 
-        <footer className="mt-12 border-t border-line py-8 text-center text-xs text-muted">
-          <p>
-            Paiement à la livraison, Orange Money, MTN MoMo ou Wave — à convenir directement avec le
-            vendeur.
-          </p>
-          {plan.showBadge ? (
-            <p className="mt-3">
-              Vitrine gratuite propulsée par{" "}
-              <Link href="/" className="font-bold text-brand-700 hover:underline">
-                Vitrine
-              </Link>
+        <footer className="mt-14 border-t border-line pt-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[12px] leading-relaxed text-muted">
+              Paiement à la livraison, Orange Money, MTN MoMo ou Wave — à convenir avec le vendeur.
             </p>
-          ) : (
-            <p className="mt-3 font-semibold text-brand-700">Boutique {merchant.storeName}</p>
-          )}
+            {plan.showBadge ? (
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-[11px] text-muted hover:text-brand-700"
+              >
+                Boutique propulsée par
+                <span className="display text-[13px] text-ink">Vitrine</span>
+              </Link>
+            ) : (
+              <p className="text-[11px] text-muted">Boutique {merchant.storeName}</p>
+            )}
+          </div>
         </footer>
       </div>
     </div>

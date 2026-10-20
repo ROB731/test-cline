@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
+import { Icon } from "@/components/icons";
 
 export function StoreLink({ slug, compact = false }: { slug: string; compact?: boolean }) {
   const [origin, setOrigin] = useState(process.env.NEXT_PUBLIC_APP_URL || "");
@@ -23,8 +24,13 @@ export function StoreLink({ slug, compact = false }: { slug: string; compact?: b
         <CopyButton value={url} className="btn btn-outline shrink-0 px-3 py-1.5 text-xs" />
       </div>
       <div className="flex flex-wrap gap-2 text-xs font-semibold">
-        <Link href={path} target="_blank" className="text-brand-700 hover:underline">
-          Ouvrir ma vitrine ↗
+        <Link
+          href={path}
+          target="_blank"
+          className="inline-flex items-center gap-1 text-brand-700 hover:underline"
+        >
+          Ouvrir ma vitrine
+          <Icon name="external" className="h-3 w-3" />
         </Link>
         <span className="text-line">•</span>
         <a

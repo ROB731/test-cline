@@ -3,6 +3,7 @@
 import { useActionState, useRef, useState } from "react";
 import Link from "next/link";
 import { createProduct, updateProduct, type ProductState } from "@/lib/actions/products";
+import { Icon } from "@/components/icons";
 
 type ProductInput = {
   id: string;
@@ -208,10 +209,10 @@ export function ProductForm({ product }: { product?: ProductInput }) {
                     <button
                       type="button"
                       onClick={() => makeMain(index)}
-                      className="rounded px-1 text-[9px] font-bold text-white"
+                      className="rounded p-0.5 text-white"
                       title="Définir comme photo principale"
                     >
-                      ★
+                      <Icon name="star" className="h-3 w-3" filled />
                     </button>
                   ) : (
                     <span />
@@ -219,10 +220,10 @@ export function ProductForm({ product }: { product?: ProductInput }) {
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="rounded px-1 text-[9px] font-bold text-white"
+                    className="rounded p-0.5 text-white"
                     title="Supprimer"
                   >
-                    ✕
+                    <Icon name="close" className="h-3 w-3" />
                   </button>
                 </div>
               </div>
@@ -235,7 +236,7 @@ export function ProductForm({ product }: { product?: ProductInput }) {
                 disabled={uploading}
                 className="flex aspect-square flex-col items-center justify-center rounded-xl border-2 border-dashed border-line bg-paper text-muted transition hover:border-brand-400 hover:text-brand-700"
               >
-                <span className="text-2xl leading-none">+</span>
+                <Icon name="plus" className="h-5 w-5" />
                 <span className="mt-1 text-[10px] font-semibold">
                   {uploading ? "Envoi…" : "Ajouter"}
                 </span>
@@ -266,10 +267,13 @@ export function ProductForm({ product }: { product?: ProductInput }) {
             </button>
           </div>
 
-          <p className="rounded-xl bg-brand-50 px-3 py-2 text-[11px] leading-relaxed text-brand-900/80">
-            💡 Astuce : prends la photo près d&apos;une fenêtre, sur un fond uni. Le client voit
-            mieux la matière et la couleur.
-          </p>
+          <div className="flex gap-2.5 rounded-lg border border-line bg-paper px-3 py-2.5">
+            <Icon name="camera" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-600" />
+            <p className="text-[11px] leading-relaxed text-muted">
+              Photographiez près d&apos;une fenêtre, sur un fond uni : la matière et la couleur
+              ressortent nettement mieux.
+            </p>
+          </div>
         </div>
       </div>
 

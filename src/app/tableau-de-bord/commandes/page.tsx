@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { formatDate, formatFCFA, ORDER_STATUSES, statusMeta, whatsappLink } from "@/lib/format";
 import { parseItems } from "@/lib/types";
 import { OrderStatusForm } from "@/components/OrderStatusForm";
-import { IconWhatsApp } from "@/components/icons";
+import { Icon, IconWhatsApp } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -46,15 +46,15 @@ export default async function CommandesPage({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Commandes</h1>
-        <p className="mt-1 text-sm text-muted">
-          Chaque commande reçue depuis ta vitrine arrive ici, avec le récapitulatif complet.
+        <h1 className="display text-[30px] leading-tight">Commandes</h1>
+        <p className="mt-1 text-[13px] text-muted">
+          Chaque commande passée sur votre vitrine arrive ici avec son récapitulatif complet.
         </p>
       </div>
 
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+      <div className="-mx-1 flex gap-5 overflow-x-auto border-b border-line px-1">
         {filters.map((filter) => (
           <Link
             key={filter.id}
@@ -63,27 +63,29 @@ export default async function CommandesPage({
                 ? "/tableau-de-bord/commandes"
                 : `/tableau-de-bord/commandes?statut=${filter.id}`
             }
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+            className={`-mb-px shrink-0 border-b-2 pb-2.5 text-[13px] transition ${
               active === filter.id
-                ? "border-brand-700 bg-brand-700 text-white"
-                : "border-line bg-white text-muted hover:border-brand-300 hover:text-ink"
+                ? "border-brand-800 font-medium text-ink"
+                : "border-transparent text-muted hover:text-ink"
             }`}
           >
-            {filter.label} ({filter.count})
+            {filter.label}
+            <span className="ml-1.5 text-[11px] text-muted">{filter.count}</span>
           </Link>
         ))}
       </div>
 
       {orders.length === 0 ? (
-        <div className="card px-6 py-14 text-center">
-          <p className="text-4xl">🧾</p>
-          <h2 className="mt-3 text-lg font-bold">Aucune commande ici</h2>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted">
-            Dès qu&apos;un client valide son panier sur ta vitrine, la commande apparaît dans cette
-            liste.
+        <div className="card px-6 py-16 text-center">
+          <Icon name="bag" className="mx-auto h-7 w-7 text-line-strong" />
+          <h2 className="mt-4 text-[15px] font-medium">Aucune commande dans cette catégorie</h2>
+          <p className="mx-auto mt-1.5 max-w-[320px] text-[13px] leading-relaxed text-muted">
+            Dès qu&apos;un client valide son panier sur votre vitrine, la commande apparaît dans
+            cette liste.
           </p>
-          <Link href={`/s/${merchant.slug}`} target="_blank" className="btn btn-outline mt-5">
-            Voir ma vitrine ↗
+          <Link href={`/s/${merchant.slug}`} target="_blank" className="btn btn-outline btn-sm mt-5">
+            <Icon name="external" className="h-3.5 w-3.5" />
+            Voir ma vitrine
           </Link>
         </div>
       ) : (
@@ -119,62 +121,63 @@ function OrderCard({
   const recap = [
     `Bonjour ${order.customerName},`,
     `Votre commande ${order.reference} chez ${storeName} :`,
-    ...items.map((item) => `- ${item.quantity} × ${item.name} (${formatFCFA(item.price)})`),
+    ...items.map((item) => `- ${item.quantity} x ${item.name} (${formatFCFA(item.price)})`),
     `Total : ${formatFCFA(order.total)}`,
   ].join("\n");
 
   return (
     <article className="card overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-bold text-muted">{order.reference}</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-paper/60 px-4 py-2.5">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[11px] font-medium">{order.reference}</span>
           <span className={`badge ${meta.tone}`}>{meta.label}</span>
         </div>
         <OrderStatusForm id={order.id} status={order.status} />
       </div>
 
-      <div className="grid gap-4 p-4 sm:grid-cols-[1.2fr_1fr]">
+      <div className="grid gap-5 p-4 sm:grid-cols-[1.15fr_1fr]">
         <div>
-          <p className="text-sm font-bold">{order.customerName}</p>
-          <p className="text-xs text-muted">
+          <p className="text-[14px] font-medium">{order.customerName}</p>
+          <p className="mt-0.5 text-[12px] text-muted">
             {order.customerPhone} · {formatDate(order.createdAt)}
           </p>
+
           {order.deliveryNote && (
-            <p className="mt-2 rounded-lg bg-paper px-3 py-2 text-xs text-muted">
-              📍 {order.deliveryNote}
+            <p className="mt-2.5 flex gap-2 text-[12px] leading-relaxed text-muted">
+              <Icon name="truck" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              {order.deliveryNote}
             </p>
           )}
-          <div className="mt-3 flex flex-wrap gap-2">
+
+          <div className="mt-4 flex flex-wrap gap-2">
             <a
               href={whatsappLink(order.customerPhone, recap)}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-wa px-3 py-1.5 text-xs"
+              className="btn btn-wa btn-sm"
             >
               <IconWhatsApp className="h-3.5 w-3.5" />
               Contacter
             </a>
-            <a
-              href={`tel:+${order.customerPhone.replace(/\D/g, "")}`}
-              className="btn btn-outline px-3 py-1.5 text-xs"
-            >
+            <a href={`tel:+${order.customerPhone.replace(/\D/g, "")}`} className="btn btn-outline btn-sm">
+              <Icon name="phone" className="h-3.5 w-3.5" />
               Appeler
             </a>
           </div>
         </div>
 
-        <ul className="space-y-1.5 rounded-xl bg-paper p-3 text-sm">
+        <ul className="space-y-1.5 rounded-lg bg-paper p-3.5 text-[13px]">
           {items.map((item) => (
             <li key={item.productId} className="flex justify-between gap-3">
               <span className="min-w-0 truncate text-muted">
                 {item.quantity} × {item.name}
               </span>
-              <span className="shrink-0 font-semibold">
+              <span className="shrink-0 font-medium">
                 {formatFCFA(item.price * item.quantity)}
               </span>
             </li>
           ))}
-          <li className="flex justify-between border-t border-line pt-1.5 font-bold">
+          <li className="mt-1 flex justify-between border-t border-line pt-2 font-medium">
             <span>Total</span>
             <span>{formatFCFA(order.total)}</span>
           </li>

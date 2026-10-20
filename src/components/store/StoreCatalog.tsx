@@ -14,6 +14,7 @@ import {
 } from "@/lib/cart";
 import { formatFCFA } from "@/lib/format";
 import { CartSheet } from "@/components/store/CartSheet";
+import { Icon } from "@/components/icons";
 
 export type CatalogProduct = {
   id: string;
@@ -51,7 +52,7 @@ export function StoreCatalog({
 
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 1800);
+    const timer = setTimeout(() => setToast(null), 1900);
     return () => clearTimeout(timer);
   }, [toast]);
 
@@ -90,33 +91,34 @@ export function StoreCatalog({
 
   return (
     <>
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:max-w-xs">
+            <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher un article…"
-              className="input pl-9 text-sm"
+              placeholder="Rechercher un article"
+              className="input pl-9 text-[13px]"
               aria-label="Rechercher un article"
             />
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">
-              🔍
-            </span>
           </div>
+          <p className="text-[12px] text-muted">
+            {filtered.length} article{filtered.length > 1 ? "s" : ""}
+          </p>
         </div>
 
         {categories.length > 1 && (
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          <div className="flex gap-5 overflow-x-auto border-b border-line">
             {categories.map((entry) => (
               <button
                 key={entry}
                 type="button"
                 onClick={() => setCategory(entry)}
-                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                className={`-mb-px shrink-0 border-b-2 pb-2.5 text-[12px] transition ${
                   category === entry
-                    ? "border-brand-700 bg-brand-700 text-white"
-                    : "border-line bg-white text-muted"
+                    ? "border-brand-800 font-medium text-ink"
+                    : "border-transparent text-muted hover:text-ink"
                 }`}
               >
                 {entry}
@@ -126,61 +128,71 @@ export function StoreCatalog({
         )}
 
         {filtered.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-line bg-white px-4 py-12 text-center text-sm text-muted">
-            {products.length === 0
-              ? "La boutique prépare ses premiers articles. Reviens très vite !"
-              : "Aucun article ne correspond à ta recherche."}
-          </p>
+          <div className="rounded-xl border border-dashed border-line-strong px-6 py-16 text-center">
+            <Icon name="grid" className="mx-auto h-6 w-6 text-line-strong" />
+            <p className="mt-3 text-[13px] font-medium">
+              {products.length === 0 ? "Les premiers articles arrivent bientôt" : "Aucun résultat"}
+            </p>
+            <p className="mt-1 text-[12px] text-muted">
+              {products.length === 0
+                ? "La boutique prépare son catalogue. Revenez dans quelques jours."
+                : "Essayez un autre mot ou une autre catégorie."}
+            </p>
+          </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {filtered.map((product) => (
-              <article key={product.id} className="group overflow-hidden rounded-2xl border border-line bg-white">
-                <Link href={`/s/${slug}/p/${product.id}`} className="relative block aspect-square bg-paper">
+              <article key={product.id} className="group">
+                <Link
+                  href={`/s/${slug}/p/${product.id}`}
+                  className="relative block aspect-square overflow-hidden rounded-lg border border-line bg-paper"
+                >
                   {product.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={product.image}
                       alt={product.name}
                       loading="lazy"
-                      className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-3xl">🖼️</div>
+                    <div className="flex h-full items-center justify-center">
+                      <Icon name="image" className="h-6 w-6 text-line-strong" />
+                    </div>
                   )}
                   {product.stock <= 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/70">
-                      <span className="rounded-full bg-ink px-3 py-1 text-[10px] font-bold text-white">
-                        Épuisé
-                      </span>
-                    </div>
+                    <span className="absolute left-2 top-2 rounded bg-white/95 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+                      Épuisé
+                    </span>
                   )}
                 </Link>
 
-                <div className="p-2.5">
-                  <Link href={`/s/${slug}/p/${product.id}`}>
-                    <h3 className="line-clamp-2 text-xs font-semibold leading-snug sm:text-sm">
-                      {product.name}
-                    </h3>
-                  </Link>
-                  <div className="mt-1.5 flex items-end justify-between gap-1">
-                    <div>
-                      <p className="text-sm font-extrabold text-brand-800">{formatFCFA(product.price)}</p>
+                <div className="mt-2.5 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <Link href={`/s/${slug}/p/${product.id}`}>
+                      <h3 className="line-clamp-2 text-[13px] font-medium leading-snug">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <p className="mt-1 text-[13px]">
+                      <span className="font-medium">{formatFCFA(product.price)}</span>
                       {product.compareAtPrice && (
-                        <p className="text-[10px] text-muted line-through">
+                        <span className="ml-1.5 text-[11px] text-muted line-through">
                           {formatFCFA(product.compareAtPrice)}
-                        </p>
+                        </span>
                       )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleAdd(product)}
-                      disabled={product.stock <= 0}
-                      aria-label={`Ajouter ${product.name} au panier`}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-700 text-lg leading-none text-white transition hover:bg-brand-800 disabled:bg-line"
-                    >
-                      +
-                    </button>
+                    </p>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAdd(product)}
+                    disabled={product.stock <= 0}
+                    aria-label={`Ajouter ${product.name} au panier`}
+                    className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line-strong text-ink transition hover:border-brand-700 hover:bg-brand-50 hover:text-brand-800 disabled:border-line disabled:text-line-strong"
+                  >
+                    <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
+                  </button>
                 </div>
               </article>
             ))}
@@ -189,24 +201,24 @@ export function StoreCatalog({
       </div>
 
       {toast && (
-        <div className="fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white shadow-lg">
-          {toast} ✓
+        <div className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-md bg-ink px-3.5 py-2 text-[12px] font-medium text-white shadow-lg">
+          <Icon name="check" className="h-3.5 w-3.5 text-brand-300" strokeWidth={2.4} />
+          {toast}
         </div>
       )}
 
       {count > 0 && !sheetOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 p-3 backdrop-blur">
-          <button
-            type="button"
-            onClick={() => setSheetOpen(true)}
-            className="btn btn-primary w-full justify-between"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs">
-              {count}
-            </span>
-            <span>Voir ma commande</span>
-            <span className="font-bold">{formatFCFA(total)}</span>
-          </button>
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 backdrop-blur">
+          <div className="container-page flex items-center gap-4">
+            <p className="text-[12px] text-muted">
+              {count} article{count > 1 ? "s" : ""}
+            </p>
+            <p className="ml-auto text-[14px] font-medium">{formatFCFA(total)}</p>
+            <button type="button" onClick={() => setSheetOpen(true)} className="btn btn-primary btn-sm">
+              Voir mon panier
+              <Icon name="arrowRight" className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       )}
 

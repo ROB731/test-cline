@@ -21,18 +21,18 @@ export function StoreSettingsForm({ merchant }: { merchant: MerchantInput }) {
   return (
     <form action={action} className="space-y-5">
       {state.error && (
-        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
+        <p className="rounded-lg border border-danger/25 bg-danger/[0.06] px-3.5 py-2.5 text-[13px] text-danger">
           {state.error}
         </p>
       )}
       {state.success && (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+        <p className="rounded-lg border border-success/25 bg-success/[0.07] px-3.5 py-2.5 text-[13px] text-success">
           {state.success}
         </p>
       )}
 
       <div className="card space-y-4 p-5">
-        <h2 className="font-bold">Identité de la boutique</h2>
+        <h2 className="border-b border-line pb-3 text-[14px] font-medium">Identité de la boutique</h2>
 
         <div>
           <label className="label" htmlFor="storeName">Nom de la boutique</label>
@@ -53,7 +53,7 @@ export function StoreSettingsForm({ merchant }: { merchant: MerchantInput }) {
               required
             />
           </div>
-          <p className="mt-1 text-xs text-muted">Minuscules, chiffres et tirets. Exemple : chez-awa</p>
+          <p className="mt-1.5 text-[11.5px] text-muted">Minuscules, chiffres et tirets. Exemple : chez-awa</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -80,7 +80,7 @@ export function StoreSettingsForm({ merchant }: { merchant: MerchantInput }) {
       </div>
 
       <div className="card space-y-4 p-5">
-        <h2 className="font-bold">Contacts</h2>
+        <h2 className="border-b border-line pb-3 text-[14px] font-medium">Contacts</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="whatsapp">Numéro WhatsApp</label>
@@ -91,7 +91,7 @@ export function StoreSettingsForm({ merchant }: { merchant: MerchantInput }) {
             <input className="input" id="callNumber" name="callNumber" inputMode="tel" defaultValue={merchant.callNumber ?? ""} placeholder="Optionnel" />
           </div>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-[11.5px] text-muted">
           Les commandes arrivent sur le numéro WhatsApp. Le numéro d&apos;appel s&apos;affiche sur la vitrine.
         </p>
       </div>

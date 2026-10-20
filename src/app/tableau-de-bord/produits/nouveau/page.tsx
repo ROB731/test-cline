@@ -3,6 +3,7 @@ import { requireMerchant } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getPlan } from "@/lib/plans";
 import { ProductForm } from "@/components/ProductForm";
+import { Icon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -13,18 +14,18 @@ export default async function NouveauProduitPage() {
 
   if (count >= plan.maxProducts) {
     return (
-      <div className="mx-auto max-w-lg text-center">
-        <p className="text-4xl">📦</p>
-        <h1 className="mt-3 text-2xl font-extrabold">Limite de produits atteinte</h1>
-        <p className="mt-2 text-sm text-muted">
-          Ton plan {plan.label} autorise {plan.maxProducts} produits. Passe au plan supérieur pour
-          continuer à ajouter des articles.
+      <div className="mx-auto max-w-md py-10 text-center">
+        <Icon name="alert" className="mx-auto h-7 w-7 text-accent-500" />
+        <h1 className="display mt-4 text-[26px] leading-tight">Limite de produits atteinte</h1>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted">
+          La formule {plan.label} autorise {plan.maxProducts} produits. Passez à la formule
+          supérieure pour continuer à publier.
         </p>
         <div className="mt-6 flex justify-center gap-3">
-          <Link href="/tableau-de-bord/abonnement" className="btn btn-primary">
-            Voir les plans
+          <Link href="/tableau-de-bord/abonnement" className="btn btn-primary btn-sm">
+            Voir les formules
           </Link>
-          <Link href="/tableau-de-bord/produits" className="btn btn-outline">
+          <Link href="/tableau-de-bord/produits" className="btn btn-outline btn-sm">
             Retour
           </Link>
         </div>
@@ -33,14 +34,18 @@ export default async function NouveauProduitPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div>
-        <Link href="/tableau-de-bord/produits" className="text-sm font-semibold text-muted hover:text-ink">
-          ← Mes produits
+        <Link
+          href="/tableau-de-bord/produits"
+          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted hover:text-ink"
+        >
+          <Icon name="arrowLeft" className="h-3.5 w-3.5" />
+          Produits
         </Link>
-        <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Ajouter un produit</h1>
-        <p className="mt-1 text-sm text-muted">
-          Une photo nette, un prix juste, et ton article apparaît immédiatement dans ta vitrine.
+        <h1 className="display mt-2 text-[30px] leading-tight">Ajouter un produit</h1>
+        <p className="mt-1 text-[13px] text-muted">
+          Une photo nette, un prix juste : l&apos;article apparaît immédiatement dans votre vitrine.
         </p>
       </div>
 

@@ -51,11 +51,11 @@ export function slugify(input: string): string {
 }
 
 export const ORDER_STATUSES = [
-  { id: "NOUVELLE", label: "Nouvelle", tone: "bg-amber-100 text-amber-900 border-amber-200" },
-  { id: "CONFIRMEE", label: "Confirmée", tone: "bg-sky-100 text-sky-900 border-sky-200" },
-  { id: "EXPEDIEE", label: "Expédiée", tone: "bg-violet-100 text-violet-900 border-violet-200" },
-  { id: "LIVREE", label: "Livrée", tone: "bg-emerald-100 text-emerald-900 border-emerald-200" },
-  { id: "ANNULEE", label: "Annulée", tone: "bg-rose-100 text-rose-900 border-rose-200" },
+  { id: "NOUVELLE", label: "Nouvelle", tone: "border-accent-400/40 bg-accent-100 text-accent-600" },
+  { id: "CONFIRMEE", label: "Confirmée", tone: "border-brand-200 bg-brand-50 text-brand-800" },
+  { id: "EXPEDIEE", label: "Expédiée", tone: "border-line-strong bg-paper text-ink-soft" },
+  { id: "LIVREE", label: "Livrée", tone: "border-success/25 bg-success/[0.07] text-success" },
+  { id: "ANNULEE", label: "Annulée", tone: "border-danger/25 bg-danger/[0.06] text-danger" },
 ] as const;
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number]["id"];
