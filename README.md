@@ -20,6 +20,15 @@ Le vendeur n'a **aucune boutique à créer** : il importe ses produits, partage 
 
 ## La solution (v0 livrée)
 
+**Compte et connexion**
+- Inscription avec acceptation des conditions et mot de passe contrôlé (8 caractères, lettre + chiffre).
+- Vérification du numéro par code SMS à 6 chiffres (10 minutes, 5 tentatives, renvoi limité).
+- Connexion avec « rester connecté » (30 jours au lieu de 24 heures) et 5 tentatives maximum par quart d'heure.
+- Mot de passe oublié par code SMS, puis révocation de toutes les sessions.
+- Page Compte : profil, changement de mot de passe, changement de numéro vérifié, appareils connectés révocables, suppression définitive du compte.
+- Redirection après connexion vers la page demandée (`?next=`) et protection des routes.
+- Pages Conditions d'utilisation et Politique de confidentialité.
+
 **Côté vendeur**
 - Inscription en 1 minute (nom, boutique, téléphone, mot de passe) → lien `/s/ma-boutique`.
 - Ajout de produits avec upload de photos (jusqu'à 6), prix, ancien prix, catégorie, stock, visibilité.
@@ -81,7 +90,7 @@ npm run dev               # http://localhost:3000
 | `npm run setup` | génère le client Prisma, la base et les données de démo |
 | `npm run db:reset` | réinitialise la base de démo |
 | `npm run typecheck` | vérification TypeScript |
-| `npm test` | tests d'intégration (SQLite de test séparée) |
+| `npm test` | 36 tests d'intégration (SQLite de test séparée) |
 | `npm run test:e2e` | parcours navigateur Playwright (optionnel, voir plus bas) |
 
 ---
@@ -103,13 +112,26 @@ src/
     actions/                     Server Actions (auth, produits, commandes, boutique)
     auth.ts db.ts plans.ts format.ts cart.ts types.ts
 prisma/
-  schema.prisma                  Merchant / Product / Order
+  schema.prisma                  Merchant / Product / Order / Session / VerificationCode / RateLimit
   seed.mjs                       données de démonstration
 scripts/e2e.mjs                  parcours Playwright (optionnel)
 tests/                           tests Vitest
 ```
 
 ---
+
+## Variables d'environnement
+
+| Variable | Rôle |
+|---|---|
+| `DATABASE_URL` | SQLite en dev, PostgreSQL en production |
+| `AUTH_SECRET` | Signature des sessions et des codes (obligatoire en production) |
+| `NEXT_PUBLIC_APP_URL` | URL publique utilisée pour afficher les liens de boutique |
+| `SMS_WEBHOOK_URL` | Endpoint appelé pour envoyer les codes par SMS (facultatif) |
+| `SMS_API_KEY` | Jeton envoyé à cet endpoint (facultatif) |
+
+Sans `SMS_WEBHOOK_URL`, aucun SMS n'est envoyé : le code est écrit dans les logs et affiché
+à l'écran hors production (mode démonstration).
 
 ## Décisions techniques importantes
 
@@ -121,7 +143,9 @@ tests/                           tests Vitest
   zéro validation Meta, aucun risque de blocage de compte.
 - **Limites de plan appliquées côté serveur** (pas seulement dans l'UI).
 - **Upload** : type MIME et taille contrôlés, nom de fichier aléatoire, session obligatoire.
-- **Sessions** : cookie `httpOnly`, `sameSite=lax`, `secure` en production, signature HMAC + expiration.
+- **Sessions** : cookie `httpOnly`, `sameSite=lax`, `secure` en production. Jeton aléatoire de 32 octets, seule son empreinte SHA-256 est stockée, ce qui permet la révocation appareil par appareil.
+- **Codes SMS** : hachés en base, expiration 10 minutes, 5 tentatives maximum, ancien code invalidé à chaque renvoi, 5 envois par quart d'heure.
+- **Anti-énumération** : la demande de réinitialisation renvoie toujours le même message, que le numéro existe ou non.
 
 ## Modèle économique
 
@@ -166,7 +190,10 @@ npm test
 
 La suite couvre : formatage FCFA et liens WhatsApp, création de commande publique (total recalculé,
 prix client ignoré, stock décrémenté, refus si stock insuffisant / produit masqué / panier vide),
-changement de statut, restitution du stock à l'annulation et isolation entre boutiques.
+changement de statut, restitution du stock à l'annulation, isolation entre boutiques, hachage des
+mots de passe, codes SMS (validité, expiration, tentatives, renvoi, limitation), inscription,
+connexion et limitation des tentatives, récupération de mot de passe, changement de mot de passe,
+vérification du numéro, changement de numéro et suppression de compte.
 
 ### E2E navigateur (optionnel)
 
