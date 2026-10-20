@@ -190,8 +190,8 @@ export default async function DashboardHome({
             <div>
               <p className="text-[13px] font-medium">Formule gratuite</p>
               <p className="mt-0.5 text-[13px] leading-relaxed text-muted">
-                {plan.maxProducts} produits maximum et mention Vitrine en bas de page. Le plan Pro
-                retire la mention et autorise 200 produits.
+                {plan.maxProducts} produits maximum et mention Vitrine en bas de page. La formule
+                Essentiel retire la mention et autorise 100 produits.
               </p>
             </div>
           </div>

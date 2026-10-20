@@ -6,7 +6,7 @@ const highlights = [
   { icon: "store" as const, text: "Une boutique à votre nom, prête en cinq minutes" },
   { icon: "bag" as const, text: "Un panier qui envoie une commande structurée sur WhatsApp" },
   { icon: "box" as const, text: "Un stock qui se met à jour à chaque vente" },
-  { icon: "card" as const, text: "Gratuit pour commencer, 5 000 FCFA par mois pour le plan Pro" },
+  { icon: "card" as const, text: "Gratuit pour commencer, puis 1 500 FCFA par mois pour la formule Essentiel" },
 ];
 
 export function AuthShell({

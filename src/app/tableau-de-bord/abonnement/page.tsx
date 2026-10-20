@@ -90,7 +90,7 @@ export default async function AbonnementPage() {
               <a
                 href={whatsappLink(
                   "0700000000",
-                  `Bonjour, je souhaite activer la formule ${current.id === "FREE" ? "Pro" : "Business"} pour la boutique ${merchant.storeName}.`,
+                  `Bonjour, je souhaite activer une formule payante pour la boutique ${merchant.storeName}.`,
                 )}
                 target="_blank"
                 rel="noreferrer"

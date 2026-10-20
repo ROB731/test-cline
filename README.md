@@ -27,7 +27,7 @@ Le vendeur n'a **aucune boutique à créer** : il importe ses produits, partage 
 - Gestion des commandes : Nouvelle → Confirmée → Expédiée → Livrée / Annulée (le stock est restitué à l'annulation).
 - Contact client en un clic (WhatsApp avec récapitulatif pré-rempli, ou appel).
 - Réglages de la boutique : nom, lien, ville, présentation, logo, numéros.
-- Abonnement : Gratuit / Pro / Business avec limites appliquées côté serveur.
+- Abonnement : Gratuit / Essentiel / Pro avec limites appliquées côté serveur.
 
 **Côté client (sans compte, sans application)**
 - Vitrine mobile-first : en-tête boutique, recherche, filtres par catégorie, grille de produits.
@@ -128,8 +128,8 @@ tests/                           tests Vitest
 | Plan | Prix | Limite |
 |---|---|---|
 | Gratuit | 0 FCFA | 15 produits, badge « Vitrine » |
-| Pro | 5 000 FCFA/mois | 200 produits, sans badge, statistiques |
-| Business | 15 000 FCFA/mois | produits illimités, accompagnement |
+| Essentiel | 1 500 FCFA/mois | 100 produits, sans mention Vitrine |
+| Pro | 3 000 FCFA/mois | produits illimités, statistiques, export |
 
 Paiement prévu par Orange Money, MTN MoMo et Wave. En v0, l'activation se fait manuellement
 via WhatsApp depuis l'onglet Abonnement.
