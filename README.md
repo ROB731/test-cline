@@ -91,6 +91,8 @@ npm run dev               # http://localhost:3000
 | `npm run db:reset` | réinitialise la base de démo |
 | `npm run typecheck` | vérification TypeScript |
 | `npm test` | 36 tests d'intégration (SQLite de test séparée) |
+| `npm run demo` | prépare la base, lance le serveur et ouvre un tunnel public |
+| `npm run db:backup` | copie la base SQLite dans `backups/` avec un horodatage |
 | `npm run test:e2e` | parcours navigateur Playwright (optionnel, voir plus bas) |
 
 ---
@@ -119,6 +121,39 @@ tests/                           tests Vitest
 ```
 
 ---
+
+## Base de données (SQLite)
+
+Le projet tourne volontairement sur **SQLite** pour cette phase : aucun serveur de base à
+installer, un seul fichier à sauvegarder, et des performances suffisantes pour des dizaines de
+boutiques.
+
+| Élément | Emplacement |
+|---|---|
+| Base de démonstration | `prisma/dev.db` |
+| Base des tests | `prisma/test.db` (recréée à chaque `npm test`) |
+| Sauvegardes | `backups/vitrine-<date>.db` |
+
+**Initialisation automatique.** `npm start` exécute `scripts/prepare-db.mjs` : si le fichier
+n'existe pas, le schéma est créé et les données de démonstration sont chargées ; si la base existe,
+elle est conservée telle quelle. Le mode WAL est activé quand la base le permet.
+
+**Sauvegarde et restauration.**
+
+```bash
+npm run db:backup                 # copie horodatée dans backups/
+cp backups/vitrine-<date>.db prisma/dev.db   # restauration
+```
+
+**Repartir de zéro.** `npm run db:reset` remet la démo dans son état initial (suppression des
+comptes créés, des produits et des commandes).
+
+**Surveillance.** `GET /api/health` renvoie l'état du serveur et le nombre de boutiques, produits
+et commandes : pratique pour vérifier qu'une instance répond et que la base est accessible.
+
+**Passage à PostgreSQL.** Le schéma est compatible : changer `provider` dans
+`prisma/schema.prisma`, mettre à jour `DATABASE_URL`, puis `npx prisma db push`. Aucune requête
+du code applicatif n'est spécifique à SQLite.
 
 ## Variables d'environnement
 

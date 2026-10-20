@@ -18,3 +18,7 @@ tsconfig.tsbuildinfo
 prisma/test.db
 prisma/test.db-journal
 .env
+backups/
+prisma/*.db-wal
+prisma/*.db-shm
+bin/cloudflared
