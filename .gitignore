@@ -22,3 +22,5 @@ backups/
 prisma/*.db-wal
 prisma/*.db-shm
 bin/cloudflared
+storage/uploads/*
+!storage/uploads/.gitkeep

@@ -16,7 +16,8 @@ const EXTENSIONS: Record<string, string> = {
 
 /**
  * Upload d'une photo produit.
- * Stockage local dans /public/uploads pour le prototype.
+ * Stockage local dans storage/uploads (hors de /public, car Next.js ne sert que
+ * les fichiers publics presents au moment du build).
  * En production : remplacer par Cloudinary / S3 / R2.
  */
 export async function POST(request: Request) {
@@ -41,12 +42,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Photo trop lourde (5 Mo maximum)." }, { status: 400 });
   }
 
-  const dir = path.join(process.cwd(), "public", "uploads");
+  const dir = path.join(process.cwd(), "storage", "uploads");
   await mkdir(dir, { recursive: true });
 
   const name = `${randomUUID()}.${EXTENSIONS[file.type]}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, name), buffer);
 
-  return NextResponse.json({ url: `/uploads/${name}` });
+  return NextResponse.json({ url: `/media/${name}` });
 }

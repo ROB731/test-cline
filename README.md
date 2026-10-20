@@ -132,6 +132,7 @@ boutiques.
 |---|---|
 | Base de démonstration | `prisma/dev.db` |
 | Base des tests | `prisma/test.db` (recréée à chaque `npm test`) |
+| Photos envoyées par les marchands | `storage/uploads/` (hors de `public/`) |
 | Sauvegardes | `backups/vitrine-<date>.db` |
 
 **Initialisation automatique.** `npm start` exécute `scripts/prepare-db.mjs` : si le fichier
@@ -147,6 +148,14 @@ cp backups/vitrine-<date>.db prisma/dev.db   # restauration
 
 **Repartir de zéro.** `npm run db:reset` remet la démo dans son état initial (suppression des
 comptes créés, des produits et des commandes).
+
+**Photos envoyées par les marchands.** Next.js ne sert que les fichiers de `public/` présents au
+moment du build : un fichier déposé à l'exécution renvoie 404. Les photos sont donc écrites dans
+`storage/uploads/` et servies par la route `/media/<fichier>` (nom de fichier validé, extensions
+limitées aux images, cache immutable). Les visuels de démonstration restent dans
+`public/uploads/photos/` car ils font partie du build.
+
+Pensez à sauvegarder `storage/uploads/` en même temps que la base : `tar czf backups/media-<date>.tgz storage/uploads`.
 
 **Surveillance.** `GET /api/health` renvoie l'état du serveur et le nombre de boutiques, produits
 et commandes : pratique pour vérifier qu'une instance répond et que la base est accessible.

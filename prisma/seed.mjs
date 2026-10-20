@@ -167,7 +167,7 @@ async function main() {
           category: product.category,
           stock: product.stock,
           active: true,
-          images: JSON.stringify([`/uploads/photos/${product.photo}`]),
+          images: JSON.stringify([`/uploads/photos/${product.photo}?v=2`]),
         },
       }),
     );
