@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 export default async function DashboardHome({
   searchParams,
 }: {
-  searchParams: Promise<{ bienvenue?: string }>;
+  searchParams: Promise<{ bienvenue?: string; verifie?: string }>;
 }) {
   const merchant = await requireMerchant();
-  const { bienvenue } = await searchParams;
+  const { bienvenue, verifie } = await searchParams;
   const plan = getPlan(merchant.plan);
 
   const [productCount, orders, revenue, lowStock, newOrders, delivered] = await Promise.all([
@@ -56,6 +56,35 @@ export default async function DashboardHome({
           Ajouter un produit
         </Link>
       </div>
+
+      {verifie && (
+        <div className="flex gap-3 rounded-lg border border-success/25 bg-success/[0.07] px-4 py-3.5">
+          <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+          <div>
+            <p className="text-[13px] font-medium text-success">Numéro vérifié</p>
+            <p className="mt-0.5 text-[13px] leading-relaxed text-success/80">
+              Votre compte est sécurisé. Vous pouvez recevoir les codes de récupération par SMS.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!merchant.phoneVerified && !verifie && (
+        <div className="flex flex-col justify-between gap-3 rounded-lg border border-accent-400/50 bg-accent-100/60 px-4 py-3.5 sm:flex-row sm:items-center">
+          <div className="flex gap-3">
+            <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-accent-600" />
+            <div>
+              <p className="text-[13px] font-medium text-ink">Vérifiez votre numéro de téléphone</p>
+              <p className="mt-0.5 text-[13px] leading-relaxed text-ink/70">
+                Indispensable pour récupérer votre compte en cas de mot de passe oublié.
+              </p>
+            </div>
+          </div>
+          <Link href="/verifier-telephone" className="btn btn-outline btn-sm shrink-0">
+            Vérifier maintenant
+          </Link>
+        </div>
+      )}
 
       {bienvenue && (
         <div className="flex gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3.5">

@@ -4,17 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon, type IconName } from "@/components/icons";
 
-const items: { href: string; label: string; icon: IconName }[] = [
-  { href: "/tableau-de-bord", label: "Vue d'ensemble", icon: "home" },
-  { href: "/tableau-de-bord/produits", label: "Produits", icon: "box" },
-  { href: "/tableau-de-bord/commandes", label: "Commandes", icon: "bag" },
-  { href: "/tableau-de-bord/boutique", label: "Boutique", icon: "store" },
-  { href: "/tableau-de-bord/abonnement", label: "Abonnement", icon: "sliders" },
+const items: { href: string; label: string; short: string; icon: IconName }[] = [
+  { href: "/tableau-de-bord", label: "Vue d'ensemble", short: "Accueil", icon: "home" },
+  { href: "/tableau-de-bord/produits", label: "Produits", short: "Produits", icon: "box" },
+  { href: "/tableau-de-bord/commandes", label: "Commandes", short: "Commandes", icon: "bag" },
+  { href: "/tableau-de-bord/boutique", label: "Boutique", short: "Boutique", icon: "store" },
+  { href: "/tableau-de-bord/abonnement", label: "Abonnement", short: "Formules", icon: "sliders" },
+  { href: "/tableau-de-bord/compte", label: "Compte", short: "Compte", icon: "user" },
 ];
 
 function isActive(pathname: string, href: string) {
   if (href === "/tableau-de-bord") return pathname === href;
-  return pathname.startsWith(href);
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function DashboardNav() {
@@ -48,19 +49,19 @@ export function DashboardBottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
-      <div className="grid grid-cols-5">
-        {items.map(({ href, label, icon }) => {
+      <div className="grid grid-cols-6">
+        {items.map(({ href, short, icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium ${
+              className={`flex flex-col items-center gap-1 py-2 text-[9.5px] font-medium ${
                 active ? "text-brand-800" : "text-muted"
               }`}
             >
-              <Icon name={icon} className="h-[18px] w-[18px]" />
-              {label.split(" ")[0]}
+              <Icon name={icon} className="h-[17px] w-[17px]" />
+              {short}
             </Link>
           );
         })}

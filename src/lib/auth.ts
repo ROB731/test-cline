@@ -1,15 +1,13 @@
-import { randomBytes, scryptSync, timingSafeEqual, createHmac } from "node:crypto";
-import { cookies } from "next/headers";
+import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { normalizePhone } from "@/lib/format";
 
 const COOKIE_NAME = "vitrine_session";
-const MAX_AGE = 60 * 60 * 24 * 30; // 30 jours
+const REMEMBER_DAYS = 30;
+const DEFAULT_DAYS = 1;
 
-function secret(): string {
-  return process.env.AUTH_SECRET || "dev-secret-change-me";
-}
+/* ------------------------------- Mots de passe ------------------------------ */
 
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
@@ -26,64 +24,164 @@ export function verifyPassword(password: string, stored: string): boolean {
   return timingSafeEqual(derived, expected);
 }
 
-function sign(payload: string): string {
-  return createHmac("sha256", secret()).update(payload).digest("base64url");
+export function passwordIssues(password: string): string | null {
+  if (password.length < 8) return "Le mot de passe doit contenir au moins 8 caractères.";
+  if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+    return "Le mot de passe doit contenir au moins une lettre et un chiffre.";
+  }
+  return null;
 }
 
-function encodeSession(merchantId: string): string {
-  const payload = Buffer.from(
-    JSON.stringify({ mid: merchantId, exp: Date.now() + MAX_AGE * 1000 }),
-  ).toString("base64url");
-  return `${payload}.${sign(payload)}`;
+/* --------------------------------- Sessions -------------------------------- */
+
+function hashToken(token: string): string {
+  return createHash("sha256").update(`${token}:${process.env.AUTH_SECRET ?? "dev"}`).digest("hex");
 }
 
-function decodeSession(token: string): string | null {
-  const [payload, signature] = token.split(".");
-  if (!payload || !signature) return null;
-  const expected = sign(payload);
-  if (expected.length !== signature.length) return null;
-  if (!timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) return null;
+async function requestContext() {
   try {
-    const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as {
-      mid?: string;
-      exp?: number;
+    const store = await headers();
+    return {
+      userAgent: store.get("user-agent")?.slice(0, 255) ?? null,
+      ip:
+        store.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        store.get("x-real-ip") ??
+        null,
     };
-    if (!data.mid || !data.exp || data.exp < Date.now()) return null;
-    return data.mid;
   } catch {
-    return null;
+    return { userAgent: null, ip: null };
   }
 }
 
-export async function createSession(merchantId: string) {
+export async function createSession(merchantId: string, options?: { remember?: boolean }) {
+  const days = options?.remember ? REMEMBER_DAYS : DEFAULT_DAYS;
+  const token = randomBytes(32).toString("base64url");
+  const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+  const context = await requestContext();
+
+  await prisma.session.create({
+    data: {
+      merchantId,
+      tokenHash: hashToken(token),
+      userAgent: context.userAgent,
+      ip: context.ip,
+      expiresAt,
+    },
+  });
+
   const store = await cookies();
-  store.set(COOKIE_NAME, encodeSession(merchantId), {
+  store.set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE,
+    expires: expiresAt,
   });
+
+  return { expiresAt };
+}
+
+export async function getCurrentSession() {
+  const store = await cookies();
+  const token = store.get(COOKIE_NAME)?.value;
+  if (!token) return null;
+
+  const session = await prisma.session.findUnique({
+    where: { tokenHash: hashToken(token) },
+    include: { merchant: true },
+  });
+
+  if (!session) return null;
+  if (session.expiresAt.getTime() < Date.now()) {
+    await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
+    return null;
+  }
+
+  // Rafraichit la date de derniere activite au plus une fois par heure.
+  if (Date.now() - session.lastSeenAt.getTime() > 60 * 60 * 1000) {
+    await prisma.session
+      .update({ where: { id: session.id }, data: { lastSeenAt: new Date() } })
+      .catch(() => undefined);
+  }
+
+  return session;
+}
+
+export async function getCurrentMerchant() {
+  const session = await getCurrentSession();
+  return session?.merchant ?? null;
+}
+
+export async function requireMerchant(nextPath?: string) {
+  const merchant = await getCurrentMerchant();
+  if (!merchant) {
+    const target = nextPath ? `/connexion?next=${encodeURIComponent(nextPath)}` : "/connexion";
+    redirect(target);
+  }
+  return merchant;
 }
 
 export async function destroySession() {
   const store = await cookies();
+  const token = store.get(COOKIE_NAME)?.value;
+  if (token) {
+    await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
+  }
   store.delete(COOKIE_NAME);
 }
 
-export async function getCurrentMerchant() {
+export async function revokeAllSessions(merchantId: string) {
+  await prisma.session.deleteMany({ where: { merchantId } });
+}
+
+export async function revokeOtherSessions(merchantId: string) {
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  const merchantId = decodeSession(token);
-  if (!merchantId) return null;
-  return prisma.merchant.findUnique({ where: { id: merchantId } });
+  const keep = token ? hashToken(token) : "";
+  await prisma.session.deleteMany({
+    where: { merchantId, NOT: { tokenHash: keep } },
+  });
 }
 
-export async function requireMerchant() {
-  const merchant = await getCurrentMerchant();
-  if (!merchant) redirect("/connexion");
-  return merchant;
+export async function revokeSession(sessionId: string, merchantId: string) {
+  await prisma.session.deleteMany({ where: { id: sessionId, merchantId } });
 }
 
-export { normalizePhone };
+export async function listSessions(merchantId: string) {
+  const current = await getCurrentSession();
+  const sessions = await prisma.session.findMany({
+    where: { merchantId, expiresAt: { gt: new Date() } },
+    orderBy: { lastSeenAt: "desc" },
+  });
+  return sessions.map((session) => ({
+    ...session,
+    current: session.id === current?.id,
+  }));
+}
+
+export function describeUserAgent(userAgent: string | null): string {
+  if (!userAgent) return "Appareil inconnu";
+  const browser = /Edg\//.test(userAgent)
+    ? "Edge"
+    : /OPR\//.test(userAgent)
+      ? "Opera"
+      : /Chrome\//.test(userAgent)
+        ? "Chrome"
+        : /Safari\//.test(userAgent)
+          ? "Safari"
+          : /Firefox\//.test(userAgent)
+            ? "Firefox"
+            : "Navigateur";
+  const system = /Android/.test(userAgent)
+    ? "Android"
+    : /iPhone|iPad|iOS/.test(userAgent)
+      ? "iOS"
+      : /Windows/.test(userAgent)
+        ? "Windows"
+        : /Mac OS X/.test(userAgent)
+          ? "macOS"
+          : /Linux/.test(userAgent)
+            ? "Linux"
+            : "";
+  return system ? `${browser} sur ${system}` : browser;
+}

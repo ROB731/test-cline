@@ -24,11 +24,15 @@ model Merchant {
   bio          String?
   logoUrl      String?
   plan         String   @default("FREE") // FREE | PRO | BUSINESS
+  email        String?
+  phoneVerified Boolean @default(false)
+  lastLoginAt  DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   products Product[]
   orders   Order[]
+  sessions Session[]
 }
 
 model Product {
@@ -66,4 +70,38 @@ model Order {
   merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
 
   @@index([merchantId, status])
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  merchantId String
+  tokenHash  String   @unique
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  expiresAt  DateTime
+
+  merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+}
+
+model VerificationCode {
+  id         String    @id @default(cuid())
+  phone      String
+  purpose    String // SIGNUP | RESET | PHONE_CHANGE
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, purpose])
+}
+
+model RateLimit {
+  key         String   @id
+  count       Int      @default(0)
+  windowStart DateTime @default(now())
 }

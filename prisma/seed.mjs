@@ -82,6 +82,8 @@ async function main() {
       city: "Cocody, Abidjan",
       bio: "Vêtements en wax, sacs en raphia et beauté naturelle. Fait main à Abidjan, livraison sous 48h.",
       plan: "FREE",
+      phoneVerified: true,
+      lastLoginAt: new Date(),
       passwordHash: hashPassword("demo1234"),
     },
   });

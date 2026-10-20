@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Icon } from "@/components/icons";
 import { PLANS } from "@/lib/plans";
 import { formatFCFA } from "@/lib/format";
+import { AccountDeletedNotice } from "@/components/AccountDeletedNotice";
 
 const demoStore = "/s/chez-awa";
 
@@ -35,6 +37,10 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      <Suspense fallback={null}>
+        <AccountDeletedNotice />
+      </Suspense>
 
       {/* Hero */}
       <section className="border-b border-line">
@@ -424,6 +430,8 @@ export default function HomePage() {
               <li><Link href="/inscription" className="hover:text-brand-700">Créer ma boutique</Link></li>
               <li><Link href={demoStore} className="hover:text-brand-700">Boutique démo</Link></li>
               <li><Link href="/tarifs" className="hover:text-brand-700">Tarifs</Link></li>
+              <li><Link href="/conditions" className="hover:text-brand-700">Conditions d&apos;utilisation</Link></li>
+              <li><Link href="/confidentialite" className="hover:text-brand-700">Confidentialité</Link></li>
             </ul>
           </div>
           <div>
@@ -436,7 +444,11 @@ export default function HomePage() {
           </div>
         </div>
         <div className="container-page flex flex-col gap-2 border-t border-line py-5 text-[12px] text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Vitrine. Tous droits réservés.</p>
+          <p>
+            © {new Date().getFullYear()} Vitrine. Tous droits réservés.{" "}
+            <Link href="/conditions" className="hover:text-ink">Conditions</Link>{" · "}
+            <Link href="/confidentialite" className="hover:text-ink">Confidentialité</Link>
+          </p>
           <p>Paiement Orange Money · MTN MoMo · Wave</p>
         </div>
       </footer>
