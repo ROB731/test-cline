@@ -94,22 +94,22 @@ export function StoreCatalog({
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-xs">
-            <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--shop-muted)]" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Rechercher un article"
-              className="input pl-9 text-[13px]"
+              className="shop-input pl-9"
               aria-label="Rechercher un article"
             />
           </div>
-          <p className="text-[12px] text-muted">
+          <p className="text-[12px] text-[var(--shop-muted)]">
             {filtered.length} article{filtered.length > 1 ? "s" : ""}
           </p>
         </div>
 
         {categories.length > 1 && (
-          <div className="flex gap-5 overflow-x-auto border-b border-line">
+          <div className="flex gap-5 overflow-x-auto border-b border-[var(--shop-line)]">
             {categories.map((entry) => (
               <button
                 key={entry}
@@ -117,8 +117,8 @@ export function StoreCatalog({
                 onClick={() => setCategory(entry)}
                 className={`-mb-px shrink-0 border-b-2 pb-2.5 text-[12px] transition ${
                   category === entry
-                    ? "border-brand-800 font-medium text-ink"
-                    : "border-transparent text-muted hover:text-ink"
+                    ? "border-[var(--shop-accent)] font-medium text-[var(--shop-ink)]"
+                    : "border-transparent text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
                 }`}
               >
                 {entry}
@@ -128,12 +128,12 @@ export function StoreCatalog({
         )}
 
         {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-line-strong px-6 py-16 text-center">
-            <Icon name="grid" className="mx-auto h-6 w-6 text-line-strong" />
-            <p className="mt-3 text-[13px] font-medium">
+          <div className="rounded-[var(--shop-radius)] border border-dashed border-[var(--shop-line)] px-6 py-16 text-center">
+            <Icon name="grid" className="mx-auto h-6 w-6 text-[var(--shop-muted)] opacity-60" />
+            <p className="mt-3 text-[13px] font-medium text-[var(--shop-ink)]">
               {products.length === 0 ? "Les premiers articles arrivent bientôt" : "Aucun résultat"}
             </p>
-            <p className="mt-1 text-[12px] text-muted">
+            <p className="mt-1 text-[12px] text-[var(--shop-muted)]">
               {products.length === 0
                 ? "La boutique prépare son catalogue. Revenez dans quelques jours."
                 : "Essayez un autre mot ou une autre catégorie."}
@@ -145,7 +145,7 @@ export function StoreCatalog({
               <article key={product.id} className="group">
                 <Link
                   href={`/s/${slug}/p/${product.id}`}
-                  className="relative block aspect-square overflow-hidden rounded-lg border border-line bg-paper"
+                  className="relative block aspect-square overflow-hidden rounded-[var(--shop-radius)] border border-[var(--shop-line)] bg-[var(--shop-hero)]"
                 >
                   {product.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -157,11 +157,11 @@ export function StoreCatalog({
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <Icon name="image" className="h-6 w-6 text-line-strong" />
+                      <Icon name="image" className="h-6 w-6 text-[var(--shop-muted)] opacity-60" />
                     </div>
                   )}
                   {product.stock <= 0 && (
-                    <span className="absolute left-2 top-2 rounded bg-white/95 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+                    <span className="absolute left-2 top-2 rounded bg-[var(--shop-surface)]/95 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--shop-muted)]">
                       Épuisé
                     </span>
                   )}
@@ -170,14 +170,14 @@ export function StoreCatalog({
                 <div className="mt-2.5 flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <Link href={`/s/${slug}/p/${product.id}`}>
-                      <h3 className="line-clamp-2 text-[13px] font-medium leading-snug">
+                      <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-[var(--shop-ink)]">
                         {product.name}
                       </h3>
                     </Link>
                     <p className="mt-1 text-[13px]">
-                      <span className="font-medium">{formatFCFA(product.price)}</span>
+                      <span className="font-medium text-[var(--shop-accent)]">{formatFCFA(product.price)}</span>
                       {product.compareAtPrice && (
-                        <span className="ml-1.5 text-[11px] text-muted line-through">
+                        <span className="ml-1.5 text-[11px] text-[var(--shop-muted)] line-through">
                           {formatFCFA(product.compareAtPrice)}
                         </span>
                       )}
@@ -189,7 +189,7 @@ export function StoreCatalog({
                     onClick={() => handleAdd(product)}
                     disabled={product.stock <= 0}
                     aria-label={`Ajouter ${product.name} au panier`}
-                    className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line-strong text-ink transition hover:border-brand-700 hover:bg-brand-50 hover:text-brand-800 disabled:border-line disabled:text-line-strong"
+                    className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shop-radius)] border border-[var(--shop-line)] text-[var(--shop-ink)] transition hover:border-[var(--shop-accent)] hover:text-[var(--shop-accent)] disabled:opacity-40"
                   >
                     <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
                   </button>
@@ -201,20 +201,20 @@ export function StoreCatalog({
       </div>
 
       {toast && (
-        <div className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-md bg-ink px-3.5 py-2 text-[12px] font-medium text-white shadow-lg">
-          <Icon name="check" className="h-3.5 w-3.5 text-brand-300" strokeWidth={2.4} />
+        <div className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-[var(--shop-radius)] bg-[var(--shop-ink)] px-3.5 py-2 text-[12px] font-medium text-[var(--shop-bg)] shadow-lg">
+          <Icon name="check" className="h-3.5 w-3.5 text-[var(--shop-accent)]" strokeWidth={2.4} />
           {toast}
         </div>
       )}
 
       {count > 0 && !sheetOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--shop-line)] bg-[var(--shop-surface)]/95 px-4 py-3 backdrop-blur">
           <div className="container-page flex items-center gap-4">
-            <p className="text-[12px] text-muted">
+            <p className="text-[12px] text-[var(--shop-muted)]">
               {count} article{count > 1 ? "s" : ""}
             </p>
-            <p className="ml-auto text-[14px] font-medium">{formatFCFA(total)}</p>
-            <button type="button" onClick={() => setSheetOpen(true)} className="btn btn-primary btn-sm">
+            <p className="ml-auto text-[14px] font-medium text-[var(--shop-ink)]">{formatFCFA(total)}</p>
+            <button type="button" onClick={() => setSheetOpen(true)} className="shop-btn">
               Voir mon panier
               <Icon name="arrowRight" className="h-3.5 w-3.5" />
             </button>

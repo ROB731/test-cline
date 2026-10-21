@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireMerchant } from "@/lib/auth";
 import { isOrderStatus, slugify } from "@/lib/format";
 import { PLANS, type PlanId } from "@/lib/plans";
+import { isThemeId } from "@/lib/themes";
 
 export type StoreState = { error?: string; success?: string };
 
@@ -42,6 +43,20 @@ export async function updateStore(_prev: StoreState, formData: FormData): Promis
   revalidatePath("/tableau-de-bord/boutique");
   revalidatePath(`/s/${slug}`);
   return { success: "Boutique mise à jour." };
+}
+
+export async function updateTheme(formData: FormData): Promise<void> {
+  const merchant = await requireMerchant();
+  const theme = str(formData, "theme");
+  if (!isThemeId(theme)) return;
+
+  await prisma.merchant.update({
+    where: { id: merchant.id },
+    data: { theme },
+  });
+
+  revalidatePath("/tableau-de-bord/boutique");
+  revalidatePath(`/s/${merchant.slug}`);
 }
 
 export async function updatePlan(formData: FormData): Promise<void> {

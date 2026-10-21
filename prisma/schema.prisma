@@ -24,6 +24,7 @@ model Merchant {
   bio          String?
   logoUrl      String?
   plan         String   @default("FREE") // FREE | PRO | BUSINESS
+  theme        String   @default("classique") // classique | editorial | marche | nuit
   email        String?
   phoneVerified Boolean @default(false)
   lastLoginAt  DateTime?

@@ -10,8 +10,8 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-line bg-paper">
-        <Icon name="image" className="h-8 w-8 text-line-strong" />
+      <div className="flex aspect-square w-full items-center justify-center rounded-[var(--shop-radius)] border border-[var(--shop-line)] bg-[var(--shop-hero)]">
+        <Icon name="image" className="h-8 w-8 text-[var(--shop-muted)] opacity-60" />
       </div>
     );
   }
@@ -21,7 +21,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="relative block aspect-square w-full overflow-hidden rounded-lg border border-line bg-white"
+        className="relative block aspect-square w-full overflow-hidden rounded-[var(--shop-radius)] border border-[var(--shop-line)] bg-[var(--shop-surface)]"
         aria-label="Agrandir la photo"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -39,8 +39,8 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
               key={`${src}-${i}`}
               type="button"
               onClick={() => setIndex(i)}
-              className={`h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 ${
-                i === index ? "border-brand-600" : "border-transparent opacity-80"
+              className={`h-16 w-16 shrink-0 overflow-hidden rounded-[var(--shop-radius)] border-2 ${
+                i === index ? "border-[var(--shop-accent)]" : "border-transparent opacity-70"
               }`}
               aria-label={`Photo ${i + 1}`}
             >

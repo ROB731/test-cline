@@ -133,102 +133,159 @@ const PRODUCTS = [
   },
 ];
 
-async function main() {
-  // On repart d'une base de démonstration propre.
-  await prisma.merchant.deleteMany({ where: { phone: "0700000000" } });
+const SHOPS = [
+  {
+    storeName: "Chez Awa",
+    slug: "chez-awa",
+    name: "Awa Koné",
+    phone: "0700000000",
+    theme: "classique",
+    plan: "FREE",
+    city: "Cocody, Abidjan",
+    bio: "Prêt-à-porter en wax, sacs en raphia et soins naturels. Confection artisanale à Abidjan, livraison sous 48 h.",
+    products: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    withOrders: true,
+  },
+  {
+    storeName: "Maison Kènté",
+    slug: "maison-kente",
+    name: "Kènté Diabaté",
+    phone: "0700000011",
+    theme: "editorial",
+    plan: "PRO",
+    city: "Plateau, Abidjan",
+    bio: "Objets tissés et soins naturels pour la maison. Chaque pièce est choisie chez des artisans ivoiriens.",
+    products: [9, 10, 5, 6],
+    withOrders: false,
+  },
+  {
+    storeName: "Atelier Bassam",
+    slug: "atelier-bassam",
+    name: "Aïcha Bamba",
+    phone: "0700000012",
+    theme: "marche",
+    plan: "PRO",
+    city: "Grand-Bassam",
+    bio: "Wax, raphia et cuir cousu main. Atelier ouvert du lundi au samedi, livraison partout en Côte d'Ivoire.",
+    products: [0, 4, 1, 3],
+    withOrders: false,
+  },
+  {
+    storeName: "Or & Nuit",
+    slug: "or-et-nuit",
+    name: "Nadia Ouattara",
+    phone: "0700000013",
+    theme: "nuit",
+    plan: "BUSINESS",
+    city: "Cocody, Abidjan",
+    bio: "Bijoux en laiton, soie et cuir. Des pièces sobres, pensées pour durer.",
+    products: [11, 2, 8, 3],
+    withOrders: false,
+  },
+];
 
-  const merchant = await prisma.merchant.create({
-    data: {
-      name: "Awa Koné",
-      storeName: "Chez Awa",
-      slug: "chez-awa",
-      phone: "0700000000",
-      whatsapp: "0700000000",
-      callNumber: "0700000000",
-      city: "Cocody, Abidjan",
-      bio: "Prêt-à-porter en wax, sacs en raphia et soins naturels. Confection artisanale à Abidjan, livraison sous 48 h.",
-      plan: "FREE",
-      phoneVerified: true,
-      lastLoginAt: new Date(),
-      passwordHash: hashPassword("demo1234"),
-    },
+async function main() {
+  await prisma.merchant.deleteMany({
+    where: { phone: { in: SHOPS.map((shop) => shop.phone) } },
   });
 
-  const created = [];
-  for (const product of PRODUCTS) {
-    created.push(
-      await prisma.product.create({
-        data: {
-          merchantId: merchant.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          compareAtPrice: product.compareAtPrice,
-          category: product.category,
-          stock: product.stock,
-          active: true,
-          images: JSON.stringify([`/uploads/photos/${product.photo}?v=2`]),
-        },
-      }),
-    );
-  }
-
-  const orders = [
-    {
-      reference: "CMD-2604-A7X2",
-      customerName: "Mariam Traoré",
-      customerPhone: "0708091011",
-      deliveryNote: "Yopougon, près de la pharmacie Sipca",
-      status: "NOUVELLE",
-      lines: [
-        { product: created[0], quantity: 1 },
-        { product: created[2], quantity: 2 },
-      ],
-    },
-    {
-      reference: "CMD-2604-B3K9",
-      customerName: "Jean-Marc Kouassi",
-      customerPhone: "0744556677",
-      deliveryNote: "Cocody Angré, 7e tranche",
-      status: "CONFIRMEE",
-      lines: [{ product: created[4], quantity: 1 }],
-    },
-    {
-      reference: "CMD-2604-C8P1",
-      customerName: "Fatou Bamba",
-      customerPhone: "0755667788",
-      deliveryNote: "Marcory Zone 4",
-      status: "LIVREE",
-      lines: [{ product: created[5], quantity: 2 }],
-    },
-  ];
-
-  for (const order of orders) {
-    const items = order.lines.map((line) => ({
-      productId: line.product.id,
-      name: line.product.name,
-      price: line.product.price,
-      quantity: line.quantity,
-    }));
-    await prisma.order.create({
+  for (const shop of SHOPS) {
+    const merchant = await prisma.merchant.create({
       data: {
-        reference: order.reference,
-        merchantId: merchant.id,
-        customerName: order.customerName,
-        customerPhone: order.customerPhone,
-        deliveryNote: order.deliveryNote,
-        status: order.status,
-        items: JSON.stringify(items),
-        total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        name: shop.name,
+        storeName: shop.storeName,
+        slug: shop.slug,
+        phone: shop.phone,
+        whatsapp: shop.phone,
+        callNumber: shop.phone,
+        city: shop.city,
+        bio: shop.bio,
+        plan: shop.plan,
+        theme: shop.theme,
+        phoneVerified: true,
+        lastLoginAt: new Date(),
+        passwordHash: hashPassword("demo1234"),
       },
     });
+
+    const created = [];
+    for (const index of shop.products) {
+      const product = PRODUCTS[index];
+      created.push(
+        await prisma.product.create({
+          data: {
+            merchantId: merchant.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            compareAtPrice: product.compareAtPrice,
+            category: product.category,
+            stock: product.stock,
+            active: true,
+            images: JSON.stringify([`/uploads/photos/${product.photo}?v=2`]),
+          },
+        }),
+      );
+    }
+
+    if (shop.withOrders) {
+      const orders = [
+        {
+          reference: "CMD-2604-A7X2",
+          customerName: "Mariam Traoré",
+          customerPhone: "0708091011",
+          deliveryNote: "Yopougon, près de la pharmacie Sipca",
+          status: "NOUVELLE",
+          lines: [
+            { product: created[0], quantity: 1 },
+            { product: created[2], quantity: 2 },
+          ],
+        },
+        {
+          reference: "CMD-2604-B3K9",
+          customerName: "Jean-Marc Kouassi",
+          customerPhone: "0744556677",
+          deliveryNote: "Cocody Angré, 7e tranche",
+          status: "CONFIRMEE",
+          lines: [{ product: created[4], quantity: 1 }],
+        },
+        {
+          reference: "CMD-2604-C8P1",
+          customerName: "Fatou Bamba",
+          customerPhone: "0755667788",
+          deliveryNote: "Marcory Zone 4",
+          status: "LIVREE",
+          lines: [{ product: created[5], quantity: 2 }],
+        },
+      ];
+
+      for (const order of orders) {
+        const items = order.lines.map((line) => ({
+          productId: line.product.id,
+          name: line.product.name,
+          price: line.product.price,
+          quantity: line.quantity,
+        }));
+        await prisma.order.create({
+          data: {
+            reference: order.reference,
+            merchantId: merchant.id,
+            customerName: order.customerName,
+            customerPhone: order.customerPhone,
+            deliveryNote: order.deliveryNote,
+            status: order.status,
+            items: JSON.stringify(items),
+            total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+          },
+        });
+      }
+    }
+
+    console.log(`- ${shop.storeName} (${shop.theme}) : ${created.length} produits -> /s/${shop.slug}`);
   }
 
-  console.log(`Demo prete : ${created.length} produits, ${orders.length} commandes.`);
-  console.log("   Boutique : /s/chez-awa");
-  console.log("   Connexion : 0700000000 / demo1234");
+  console.log("Demo prete. Connexion : 0700000000 / demo1234");
 }
-
 main()
   .catch((error) => {
     console.error(error);

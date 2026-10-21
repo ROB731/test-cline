@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { whatsappLink, telLink, formatFCFA } from "@/lib/format";
 import { getPlan } from "@/lib/plans";
 import { parseImages } from "@/lib/types";
+import { getTheme, themeStyle } from "@/lib/themes";
 import { StoreCatalog } from "@/components/store/StoreCatalog";
 import { Icon, IconWhatsApp } from "@/components/icons";
 
@@ -45,14 +46,19 @@ export default async function BoutiquePublique({
   });
 
   const plan = getPlan(merchant.plan);
+  const theme = getTheme(merchant.theme);
   const cheapest = products.reduce<number | null>(
     (min, product) => (min === null || product.price < min ? product.price : min),
     null,
   );
 
   return (
-    <div className="min-h-dvh bg-white pb-28">
-      <header className="border-b border-line">
+    <div
+      data-shop-theme={theme.id}
+      style={themeStyle(theme)}
+      className="min-h-dvh pb-28"
+    >
+      <header className="border-b border-[var(--shop-line)] bg-[var(--shop-surface)]">
         <div className="container-page flex h-14 items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-2.5">
             {merchant.logoUrl ? (
@@ -60,14 +66,16 @@ export default async function BoutiquePublique({
               <img
                 src={merchant.logoUrl}
                 alt={merchant.storeName}
-                className="h-8 w-8 rounded border border-line object-cover"
+                className="h-8 w-8 rounded-[var(--shop-radius)] border border-[var(--shop-line)] object-cover"
               />
             ) : (
-              <span className="display flex h-8 w-8 items-center justify-center rounded bg-brand-900 text-[13px] text-white">
+              <span className="shop-heading flex h-8 w-8 items-center justify-center rounded-[var(--shop-radius)] bg-[var(--shop-accent)] text-[13px] text-[var(--shop-accent-ink)]">
                 {merchant.storeName.slice(0, 1).toUpperCase()}
               </span>
             )}
-            <span className="truncate text-[13px] font-medium">{merchant.storeName}</span>
+            <span className="truncate text-[13px] font-medium text-[var(--shop-ink)]">
+              {merchant.storeName}
+            </span>
           </div>
           <a
             href={whatsappLink(
@@ -76,7 +84,7 @@ export default async function BoutiquePublique({
             )}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:underline"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--shop-accent)] hover:underline"
           >
             <IconWhatsApp className="h-3.5 w-3.5" />
             Écrire
@@ -84,30 +92,32 @@ export default async function BoutiquePublique({
         </div>
       </header>
 
-      <section className="border-b border-line bg-paper/60">
+      <section className="border-b border-[var(--shop-line)] bg-[var(--shop-hero)]">
         <div className="container-page py-9 sm:py-12">
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--shop-muted)]">
             {merchant.city || "Côte d'Ivoire"}
           </p>
-          <h1 className="display mt-2 text-[34px] leading-[1.08] sm:text-[42px]">
+          <h1 className="shop-heading mt-2 text-[34px] leading-[1.08] sm:text-[42px]">
             {merchant.storeName}
           </h1>
           {merchant.bio && (
-            <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-muted">{merchant.bio}</p>
+            <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-[var(--shop-muted)]">
+              {merchant.bio}
+            </p>
           )}
-          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted">
+          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[var(--shop-muted)]">
             <span>
               {products.length} article{products.length > 1 ? "s" : ""}
             </span>
             {cheapest !== null && (
               <>
-                <span className="h-3 w-px bg-line-strong" />
+                <span className="h-3 w-px bg-[var(--shop-line)]" />
                 <span>à partir de {formatFCFA(cheapest)}</span>
               </>
             )}
-            <span className="h-3 w-px bg-line-strong" />
+            <span className="h-3 w-px bg-[var(--shop-line)]" />
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--shop-accent)]" />
               Réponse sur WhatsApp
             </span>
           </p>
@@ -120,15 +130,12 @@ export default async function BoutiquePublique({
               )}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-wa"
+              className="btn btn-wa rounded-[var(--shop-radius)]"
             >
               <IconWhatsApp className="h-4 w-4" />
               Commander sur WhatsApp
             </a>
-            <a
-              href={telLink(merchant.callNumber || merchant.whatsapp)}
-              className="btn btn-outline"
-            >
+            <a href={telLink(merchant.callNumber || merchant.whatsapp)} className="shop-btn-outline">
               <Icon name="phone" className="h-4 w-4" />
               Appeler la boutique
             </a>
@@ -153,21 +160,21 @@ export default async function BoutiquePublique({
           }))}
         />
 
-        <footer className="mt-14 border-t border-line pt-6">
+        <footer className="mt-14 border-t border-[var(--shop-line)] pt-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[12px] leading-relaxed text-muted">
+            <p className="text-[12px] leading-relaxed text-[var(--shop-muted)]">
               Paiement à la livraison, Orange Money, MTN MoMo ou Wave — à convenir avec le vendeur.
             </p>
             {plan.showBadge ? (
               <Link
                 href="/"
-                className="inline-flex items-center gap-1.5 text-[11px] text-muted hover:text-brand-700"
+                className="inline-flex items-center gap-1.5 text-[11px] text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
               >
                 Boutique propulsée par
-                <span className="display text-[13px] text-ink">Vitrine</span>
+                <span className="shop-heading text-[13px]">Vitrine</span>
               </Link>
             ) : (
-              <p className="text-[11px] text-muted">Boutique {merchant.storeName}</p>
+              <p className="text-[11px] text-[var(--shop-muted)]">Boutique {merchant.storeName}</p>
             )}
           </div>
         </footer>

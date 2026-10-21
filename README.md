@@ -38,6 +38,12 @@ Le vendeur n'a **aucune boutique à créer** : il importe ses produits, partage 
 - Réglages de la boutique : nom, lien, ville, présentation, logo, numéros.
 - Abonnement : Gratuit / Essentiel / Pro avec limites appliquées côté serveur.
 
+**Apparence (thèmes)**
+- Quatre thèmes de vitrine : Classique, Éditorial, Marché, Nuit.
+- Sélection depuis `Tableau de bord > Boutique > Apparence`, appliquée immédiatement.
+- Les thèmes pilotent couleurs, rayons, typographie des titres et style des cartes via des variables CSS (`--shop-*`), sans dupliquer les composants.
+- Quatre boutiques de démonstration, une par thème : `/s/chez-awa`, `/s/maison-kente`, `/s/atelier-bassam`, `/s/or-et-nuit`.
+
 **Côté client (sans compte, sans application)**
 - Vitrine mobile-first : en-tête boutique, recherche, filtres par catégorie, grille de produits.
 - Fiche produit avec **galerie plein écran** : zoom au pincement, double-tap, glissement pour changer de photo.

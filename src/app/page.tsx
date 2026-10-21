@@ -5,6 +5,7 @@ import { Icon } from "@/components/icons";
 import { PLANS } from "@/lib/plans";
 import { formatFCFA } from "@/lib/format";
 import { AccountDeletedNotice } from "@/components/AccountDeletedNotice";
+import { THEMES } from "@/lib/themes";
 
 const demoStore = "/s/chez-awa";
 
@@ -339,6 +340,84 @@ export default function HomePage() {
                     {plan.price === 0 ? "Créer ma boutique" : `Choisir ${plan.label}`}
                   </Link>
                 </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Thèmes */}
+      <section id="themes" className="border-t border-line bg-white">
+        <div className="container-page py-16 md:py-20">
+          <div className="flex flex-col justify-between gap-6 border-b border-line pb-8 sm:flex-row sm:items-end">
+            <div className="max-w-lg">
+              <p className="eyebrow">Apparence</p>
+              <h2 className="display mt-4 text-[30px] leading-[1.1] sm:text-[36px]">
+                Quatre thèmes, une même simplicité.
+              </h2>
+            </div>
+            <p className="max-w-sm text-[13px] leading-relaxed text-muted">
+              Changez l&apos;ambiance de votre vitrine en un clic depuis votre tableau de bord, sans
+              retoucher vos produits.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {THEMES.map((theme) => {
+              const slug =
+                theme.id === "classique"
+                  ? "chez-awa"
+                  : theme.id === "editorial"
+                    ? "maison-kente"
+                    : theme.id === "marche"
+                      ? "atelier-bassam"
+                      : "or-et-nuit";
+              return (
+                <Link
+                  key={theme.id}
+                  href={`/s/${slug}`}
+                  className="group overflow-hidden rounded-xl border border-line transition hover:border-line-strong"
+                >
+                  <div
+                    className="flex h-28 items-end gap-2 p-3"
+                    style={{ backgroundColor: theme.colors.bg }}
+                  >
+                    <span
+                      className="flex-1 rounded-sm"
+                      style={{ backgroundColor: theme.colors.accent, height: "52px" }}
+                    />
+                    <span
+                      className="flex-1 rounded-sm"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        border: `1px solid ${theme.colors.line}`,
+                        height: "72px",
+                      }}
+                    />
+                    <span
+                      className="flex-1 rounded-sm"
+                      style={{ backgroundColor: theme.colors.line, height: "38px" }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <p
+                      className="text-[14px] font-medium"
+                      style={{
+                        fontFamily:
+                          theme.heading === "serif" ? "var(--font-display)" : "var(--font-inter)",
+                      }}
+                    >
+                      {theme.label}
+                    </p>
+                    <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
+                      {theme.description}
+                    </p>
+                    <span className="mt-2 inline-flex items-center gap-1 text-[11.5px] font-medium text-brand-700">
+                      Voir ce thème
+                      <Icon name="arrowRight" className="h-3 w-3" />
+                    </span>
+                  </div>
+                </Link>
               );
             })}
           </div>

@@ -40,11 +40,11 @@ export function ProductActions({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <div className="inline-flex items-center rounded-md border border-line-strong bg-white">
+        <div className="inline-flex items-center rounded-[var(--shop-radius)] border border-[var(--shop-line)] bg-[var(--shop-surface)]">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-3 py-2 text-muted hover:text-ink"
+            className="px-3 py-2 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
             aria-label="Diminuer la quantité"
           >
             <Icon name="minus" className="h-4 w-4" />
@@ -54,14 +54,14 @@ export function ProductActions({
             type="button"
             onClick={() => setQuantity((value) => Math.min(product.stock, value + 1))}
             disabled={quantity >= product.stock}
-            className="px-3 py-2 text-muted hover:text-ink disabled:opacity-30"
+            className="px-3 py-2 text-[var(--shop-muted)] hover:text-[var(--shop-ink)] disabled:opacity-30"
             aria-label="Augmenter la quantité"
           >
             <Icon name="plus" className="h-4 w-4" />
           </button>
         </div>
-        <p className="text-sm text-muted">
-          Total : <strong className="text-ink">{formatFCFA(product.price * quantity)}</strong>
+        <p className="text-sm text-[var(--shop-muted)]">
+          Total : <strong className="text-[var(--shop-ink)]">{formatFCFA(product.price * quantity)}</strong>
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export function ProductActions({
           type="button"
           onClick={() => add(true)}
           disabled={soldOut}
-          className="btn btn-primary w-full"
+          className="shop-btn w-full"
         >
           {soldOut ? "Article épuisé" : "Commander maintenant"}
         </button>
@@ -78,7 +78,7 @@ export function ProductActions({
           type="button"
           onClick={() => add(false)}
           disabled={soldOut}
-          className="btn btn-outline w-full"
+          className="shop-btn-outline w-full"
         >
           {added ? (
             <>
@@ -95,7 +95,7 @@ export function ProductActions({
         <button
           type="button"
           onClick={() => router.push(`/s/${slug}?panier=1`)}
-          className="w-full text-center text-xs font-semibold text-brand-700 hover:underline"
+          className="w-full text-center text-xs font-medium text-[var(--shop-accent)] hover:underline"
         >
           Voir ma commande →
         </button>

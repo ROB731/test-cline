@@ -82,15 +82,15 @@ export function CartSheet({
         className="absolute inset-0 bg-black/45 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-xl">
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+      <div className="relative z-10 flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-[var(--shop-radius)] bg-[var(--shop-surface)] text-[var(--shop-ink)] shadow-xl sm:rounded-[var(--shop-radius)]">
+        <div className="flex items-center justify-between border-b border-[var(--shop-line)] px-5 py-4">
           <h2 className="font-bold">
             {step === "panier" ? "Votre panier" : "Vos coordonnées"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1.5 text-muted hover:bg-paper hover:text-ink"
+            className="rounded p-1.5 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
             aria-label="Fermer"
           >
             <Icon name="close" className="h-4 w-4" />
@@ -99,25 +99,25 @@ export function CartSheet({
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 && step === "panier" ? (
-            <p className="py-10 text-center text-sm text-muted">Ton panier est vide.</p>
+            <p className="py-10 text-center text-sm text-[var(--shop-muted)]">Ton panier est vide.</p>
           ) : step === "panier" ? (
             <ul className="space-y-4">
               {items.map((item) => (
                 <li key={item.productId} className="flex gap-3">
                   {item.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.image} alt="" className="h-16 w-16 rounded-xl object-cover" />
+                    <img src={item.image} alt="" className="h-16 w-16 rounded-[var(--shop-radius)] border border-[var(--shop-line)] object-cover" />
                   ) : (
-                    <div className="h-16 w-16 rounded-xl bg-paper" />
+                    <div className="h-16 w-16 rounded-[var(--shop-radius)] bg-[var(--shop-hero)]" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{item.name}</p>
-                    <p className="text-xs text-muted">{formatFCFA(item.price)}</p>
-                    <div className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-line">
+                    <p className="text-xs text-[var(--shop-muted)]">{formatFCFA(item.price)}</p>
+                    <div className="mt-1.5 inline-flex items-center gap-1 rounded-[var(--shop-radius)] border border-[var(--shop-line)]">
                       <button
                         type="button"
                         onClick={() => onQuantity(item.productId, item.quantity - 1)}
-                        className="px-2 py-1 text-muted hover:text-ink"
+                        className="px-2 py-1 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
                         aria-label="Diminuer"
                       >
                         <Icon name="minus" className="h-3.5 w-3.5" />
@@ -127,7 +127,7 @@ export function CartSheet({
                         type="button"
                         onClick={() => onQuantity(item.productId, item.quantity + 1)}
                         disabled={item.quantity >= item.stock}
-                        className="px-2 py-1 text-muted hover:text-ink disabled:opacity-30"
+                        className="px-2 py-1 text-[var(--shop-muted)] hover:text-[var(--shop-ink)] disabled:opacity-30"
                         aria-label="Augmenter"
                       >
                         <Icon name="plus" className="h-3.5 w-3.5" />
@@ -144,15 +144,15 @@ export function CartSheet({
               <input type="hidden" name="items" value={payload} />
 
               {state.error && (
-                <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+                <p className="rounded-[var(--shop-radius)] border border-danger-400/40 bg-danger/10 px-3 py-2 text-[12.5px] text-danger">
                   {state.error}
                 </p>
               )}
 
               <div>
-                <label className="label" htmlFor="customerName">Ton nom *</label>
+                <label className="mb-1 block text-[12px] font-medium text-[var(--shop-ink)]" htmlFor="customerName">Ton nom *</label>
                 <input
-                  className="input"
+                  className="shop-input"
                   id="customerName"
                   name="customerName"
                   required
@@ -162,9 +162,9 @@ export function CartSheet({
                 />
               </div>
               <div>
-                <label className="label" htmlFor="customerPhone">Ton numéro WhatsApp *</label>
+                <label className="mb-1 block text-[12px] font-medium text-[var(--shop-ink)]" htmlFor="customerPhone">Ton numéro WhatsApp *</label>
                 <input
-                  className="input"
+                  className="shop-input"
                   id="customerPhone"
                   name="customerPhone"
                   inputMode="tel"
@@ -175,9 +175,9 @@ export function CartSheet({
                 />
               </div>
               <div>
-                <label className="label" htmlFor="deliveryNote">Livraison</label>
+                <label className="mb-1 block text-[12px] font-medium text-[var(--shop-ink)]" htmlFor="deliveryNote">Livraison</label>
                 <input
-                  className="input"
+                  className="shop-input"
                   id="deliveryNote"
                   name="deliveryNote"
                   placeholder="Quartier, repère, ville…"
@@ -186,12 +186,12 @@ export function CartSheet({
                 />
               </div>
 
-              <p className="rounded-xl bg-brand-50 px-3 py-2 text-xs leading-relaxed text-brand-900/80">
+              <p className="rounded-[var(--shop-radius)] border border-[var(--shop-line)] px-3 py-2 text-[11.5px] leading-relaxed text-[var(--shop-muted)]">
                 En validant, ta commande est enregistrée chez le vendeur et un message WhatsApp
                 pré-rempli s&apos;ouvre pour confirmer.
               </p>
 
-              <button type="submit" className="btn btn-wa w-full" disabled={pending}>
+              <button type="submit" className="btn btn-wa w-full rounded-[var(--shop-radius)]" disabled={pending}>
                 <IconWhatsApp className="h-4 w-4" />
                 {pending ? "Envoi…" : "Valider et envoyer sur WhatsApp"}
               </button>
@@ -199,18 +199,18 @@ export function CartSheet({
           )}
         </div>
 
-        <div className="border-t border-line px-5 py-4">
+        <div className="border-t border-[var(--shop-line)] px-5 py-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted">Total</span>
+            <span className="text-[var(--shop-muted)]">Total</span>
             <span className="text-[17px] font-medium">{formatFCFA(total)}</span>
           </div>
           {step === "panier" && items.length > 0 && (
-            <button type="button" onClick={() => setStep("infos")} className="btn btn-primary mt-3 w-full">
+            <button type="button" onClick={() => setStep("infos")} className="shop-btn mt-3 w-full">
               Continuer
             </button>
           )}
           {step === "infos" && (
-            <button type="button" onClick={() => setStep("panier")} className="mt-3 w-full text-xs font-semibold text-muted">
+            <button type="button" onClick={() => setStep("panier")} className="mt-3 w-full text-xs font-medium text-[var(--shop-muted)]">
               ← Modifier le panier
             </button>
           )}
